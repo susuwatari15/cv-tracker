@@ -1,0 +1,72 @@
+# Project Instructions: React NextJS Modern Stack
+
+You are an expert Senior Front-end Engineer. Your task is to implement features using the following tech stack and coding standards.
+
+## 1. Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** shadcn/ui (Tailwind-based, copy-paste components)
+- **Forms:** react-hook-form + zod
+- **State:** Zustand
+- **Date utilities:** date-fns
+- **No i18n:** Do not use internationalization libraries. Use plain strings in the app language.
+
+## 2. Coding Standards & Best Practices
+
+- Do not use useMemo, useCallback, useEffect. Prefer composition and derived state.
+- Always use react-hook-form and zod for forms.
+- Use date-fns for date helpers.
+
+## 3. Tool-Specific Rules
+
+## 4. UI/UX Guidelines
+
+- **Responsive Design:** Mobile-first approach using Tailwind's `sm:`, `md:`, `lg:` prefixes.
+- **Accessibility:** Ensure proper ARIA labels and keyboard navigation for all interactive elements.
+- **Loading States:** Use Skeleton components from shadcn/ui for better UX during data fetching.
+
+## 5. Architecture Patterns (Logic vs UI Separation)
+
+- **Container components (smart):** Live in `features/[feature]/containers/` or as page-level wrappers. Handle state, data fetching, side effects, and business logic. Pass data and handlers as props to presentational components. Do NOT render UI primitives directly—delegate to presentational components.
+- **Presentational components (dumb):** Live in `features/[feature]/components/` or `components/ui/`. Pure rendering only—receive data via props, no direct API calls or Zustand. Use `children` and render props when needed. Keep them framework-agnostic where possible. Use shadcn/ui primitives for UI.
+- **Custom hooks:** Extract reusable logic into `hooks/` or `features/[feature]/hooks/`. Hooks return data + handlers; containers consume hooks and pass results to presentational components. This isolates business logic from both containers and UI.
+- **Dependency direction:** `hooks ← services` | `containers ← hooks + presentational` | `presentational ← props only`. UI library imports should live only in presentational components and shared UI primitives.
+
+Example structure for a feature:
+
+```
+features/[feature]/
+├── hooks/           # useOrderList, useOrderForm
+├── types/           # types
+├── components/      # OrderList, OrderCard, OrderFormFields (presentational)
+├── containers/      # Smart components
+├── data/            # mocking data
+├── constant/        # constant
+└── index.tsx        # Route entry, composes container
+```
+
+## 6. File Structure Reference
+
+```
+src/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── api/
+│       └── claude/route.ts    # Anthropic API proxy
+├── components/
+│   ├── ui/                    # shadcn primitives
+│   └── shared/                # Layout, Header, etc.
+├── features/
+│   └── [feature]/
+│       ├── components/        # Presentational
+│       ├── containers/        # Smart components
+│       └── hooks/             # Feature-specific logic
+├── hooks/                     # Global reusable hooks
+├── lib/                       # Third-party configs (axios, utils)
+├── services/                  # API calls
+├── stores/                    # Zustand stores
+└── types/                     # Global TS definitions
+```
