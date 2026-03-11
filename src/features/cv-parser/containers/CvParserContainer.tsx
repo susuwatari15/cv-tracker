@@ -1,5 +1,7 @@
 "use client";
 
+import * as XLSX from "xlsx";
+
 import { useState } from "react";
 import { useApiKeyStore } from "@/stores/apiKeyStore";
 import { useClaudeApi } from "@/hooks/useClaudeApi";
@@ -10,12 +12,23 @@ import CopyButton from "@/components/shared/CopyButton";
 import UploadZone from "../components/UploadZone";
 import FieldChips from "../components/FieldChips";
 import ParsedResultCard from "../components/ParsedResultCard";
-import { CV_FIELDS, type ParsedCv } from "../types";
+import { CV_FIELDS, type CvField, type ParsedCv } from "../types";
+
+const LS_FIELDS_KEY = "cv_parser_fields";
+
+function loadFields(): CvField[] {
+	try {
+		const raw = localStorage.getItem(LS_FIELDS_KEY);
+		if (raw) return JSON.parse(raw) as CvField[];
+	} catch {}
+	return CV_FIELDS;
+}
 
 export default function CvParserContainer() {
 	const [files, setFiles] = useState<File[]>([]);
+	const [fields, setFields] = useState<CvField[]>(loadFields);
 	const [selectedFields, setSelectedFields] = useState<Set<string>>(
-		new Set(CV_FIELDS.map((f) => f.key)),
+		() => new Set(loadFields().map((f) => f.key)),
 	);
 	const [results, setResults] = useState<ParsedCv[]>([]);
 	const [showOutput, setShowOutput] = useState(false);
@@ -29,6 +42,24 @@ export default function CvParserContainer() {
 			const next = new Set(prev);
 			next.has(key) ? next.delete(key) : next.add(key);
 			return next;
+		});
+	};
+
+	const addField = (field: CvField) => {
+		const next = [...fields, field];
+		setFields(next);
+		localStorage.setItem(LS_FIELDS_KEY, JSON.stringify(next));
+		setSelectedFields((prev) => new Set([...prev, field.key]));
+	};
+
+	const removeField = (key: string) => {
+		const next = fields.filter((f) => f.key !== key);
+		setFields(next);
+		localStorage.setItem(LS_FIELDS_KEY, JSON.stringify(next));
+		setSelectedFields((prev) => {
+			const s = new Set(prev);
+			s.delete(key);
+			return s;
 		});
 	};
 
@@ -60,7 +91,7 @@ export default function CvParserContainer() {
 			const mt = getMediaType(files[i]);
 			const fieldList = fieldKeys
 				.map(
-					(k) => `- "${k}": ${CV_FIELDS.find((f) => f.key === k)?.label ?? k}`,
+					(k) => `- "${k}": ${fields.find((f) => f.key === k)?.label ?? k}`,
 				)
 				.join("\n");
 
@@ -106,7 +137,7 @@ export default function CvParserContainer() {
 	const getTabSeparatedRow = (): string => {
 		const fieldKeys = Array.from(selectedFields);
 		const header = fieldKeys
-			.map((k) => CV_FIELDS.find((f) => f.key === k)?.label ?? k)
+			.map((k) => fields.find((f) => f.key === k)?.label ?? k)
 			.join("\t");
 		const rows = results.map((r) =>
 			fieldKeys
@@ -131,6 +162,28 @@ export default function CvParserContainer() {
 		toast.success("✓ Downloaded!");
 	};
 
+	const handleDownloadExcel = () => {
+		const fieldKeys = Array.from(selectedFields);
+		const headers = fieldKeys.map(
+			(k) => fields.find((f) => f.key === k)?.label ?? k,
+		);
+
+		const rows = results.map((r) =>
+			Object.fromEntries(
+				fieldKeys.map((k, i) => {
+					const v = r[k];
+					return [headers[i], Array.isArray(v) ? v.join(", ") : (v ?? "")];
+				}),
+			),
+		);
+
+		const worksheet = XLSX.utils.json_to_sheet(rows, { header: headers });
+		const workbook = XLSX.utils.book_new();
+		XLSX.utils.book_append_sheet(workbook, worksheet, "CV Parsed");
+		XLSX.writeFile(workbook, `cv_parsed_${Date.now()}.xlsx`);
+		toast.success("✓ Downloaded Excel!");
+	};
+
 	return (
 		<div className="max-w-[720px]">
 			<FormSection title="Upload CV Files" icon="📄">
@@ -138,7 +191,13 @@ export default function CvParserContainer() {
 			</FormSection>
 
 			<FormSection title="Chọn trường cần extract" icon="🔧">
-				<FieldChips selected={selectedFields} onToggle={toggleField} />
+				<FieldChips
+					fields={fields}
+					selected={selectedFields}
+					onToggle={toggleField}
+					onAddField={addField}
+					onRemoveField={removeField}
+				/>
 			</FormSection>
 
 			<RunButton
@@ -160,7 +219,7 @@ export default function CvParserContainer() {
 							)}
 							<div className="grid grid-cols-2 gap-3">
 								{Array.from(selectedFields).map((key) => {
-									const field = CV_FIELDS.find((f) => f.key === key);
+									const field = fields.find((f) => f.key === key);
 									return (
 										<ParsedResultCard
 											key={key}
@@ -182,6 +241,13 @@ export default function CvParserContainer() {
 							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 bg-surface hover:border-ta-accent-2 hover:text-ta-accent-2 transition-all"
 						>
 							⬇️ Download CSV
+						</button>
+						<button
+							type="button"
+							onClick={handleDownloadExcel}
+							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 bg-surface hover:border-green-500 hover:text-green-500 transition-all"
+						>
+							📊 Download Excel
 						</button>
 						<button
 							type="button"
