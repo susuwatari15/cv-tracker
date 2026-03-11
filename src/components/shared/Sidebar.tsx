@@ -1,8 +1,8 @@
 "use client";
 
 import { useToolStore } from "@/stores/toolStore";
-import { useApiKeyStore } from "@/stores/apiKeyStore";
-import ApiStatusDot from "./ApiStatusDot";
+// import { useApiKeyStore } from "@/stores/apiKeyStore";
+// import ApiStatusDot from "./ApiStatusDot";
 import type { ToolId } from "@/types";
 
 const TOOL_GROUPS = [
@@ -39,7 +39,7 @@ const TOOL_GROUPS = [
 
 export default function Sidebar() {
 	const { activeTool, setActiveTool } = useToolStore();
-	const { key, status, setKey } = useApiKeyStore();
+	// const { key, status, setKey } = useApiKeyStore();
 
 	return (
 		<div className="min-[720px]:flex hidden w-[280px] min-w-[280px] shrink-0 flex-col h-full bg-ink overflow-y-auto">
@@ -52,12 +52,12 @@ export default function Sidebar() {
 					</span>
 				</div>
 				<p className="text-[11px] font-mono text-white/40 ml-8">
-					Masan Group · Tech Hiring
+					Tech Hiring
 				</p>
 			</div>
 
 			{/* API key row */}
-			<div className="px-5 py-4 border-b border-white/10">
+			{/* <div className="px-5 py-4 border-b border-white/10">
 				<label className="text-[10px] font-mono text-white/40 uppercase tracking-[0.8px] block mb-2">
 					Anthropic API Key
 				</label>
@@ -78,7 +78,7 @@ export default function Sidebar() {
 							? "✗ Key không hợp lệ"
 							: "Nhập key để sử dụng"}
 				</p>
-			</div>
+			</div> */}
 
 			{/* Navigation */}
 			<nav className="flex-1 px-3 py-4 flex flex-col gap-5">
@@ -120,7 +120,7 @@ export default function Sidebar() {
 					<div>
 						<p className="text-[12px] text-white font-medium">Hue Nguyen</p>
 						<p className="text-[10px] font-mono text-white/40">
-							TA Manager · Masan Group
+							TA Manager
 						</p>
 					</div>
 				</div>

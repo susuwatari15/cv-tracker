@@ -10,6 +10,7 @@
 Mirrors HTML's `#tool-email` section.
 
 Inputs:
+
 - Email type (select: 5 types)
 - Candidate name (required)
 - Applied position
@@ -25,35 +26,35 @@ Output: Full email with subject line.
 ### `src/features/email-writer/types/index.ts`
 
 ```ts
-import { z } from 'zod'
+import { z } from "zod";
 
 export const EMAIL_TYPES = [
-  { value: 'invite', label: 'Mời phỏng vấn' },
-  { value: 'reject', label: 'Từ chối ứng viên' },
-  { value: 'offer', label: 'Thông báo offer' },
-  { value: 'followup', label: 'Follow-up sau PV' },
-  { value: 'pipeline', label: 'Giữ pipeline (on hold)' },
-] as const
+  { value: "invite", label: "Mời phỏng vấn" },
+  { value: "reject", label: "Từ chối ứng viên" },
+  { value: "offer", label: "Thông báo offer" },
+  { value: "followup", label: "Follow-up sau PV" },
+  { value: "pipeline", label: "Giữ pipeline (on hold)" },
+] as const;
 
-export type EmailType = typeof EMAIL_TYPES[number]['value']
+export type EmailType = (typeof EMAIL_TYPES)[number]["value"];
 
 export const emailFormSchema = z.object({
-  type: z.enum(['invite', 'reject', 'offer', 'followup', 'pipeline']),
-  candidate: z.string().min(1, 'Nhập tên ứng viên trước nhé!'),
+  type: z.enum(["invite", "reject", "offer", "followup", "pipeline"]),
+  candidate: z.string().min(1, "Nhập tên ứng viên trước nhé!"),
   position: z.string(),
-  language: z.enum(['vi', 'en']),
+  language: z.enum(["vi", "en"]),
   extra: z.string(),
-})
+});
 
-export type EmailFormValues = z.infer<typeof emailFormSchema>
+export type EmailFormValues = z.infer<typeof emailFormSchema>;
 
 export const EMAIL_TYPE_LABELS: Record<EmailType, string> = {
-  invite: 'mời phỏng vấn',
-  reject: 'từ chối nhẹ nhàng',
-  offer: 'thông báo offer',
-  followup: 'follow-up sau phỏng vấn',
-  pipeline: 'giữ candidate trong pipeline (on hold)',
-}
+  invite: "mời phỏng vấn",
+  reject: "từ chối nhẹ nhàng",
+  offer: "thông báo offer",
+  followup: "follow-up sau phỏng vấn",
+  pipeline: "giữ candidate trong pipeline (on hold)",
+};
 ```
 
 ---
@@ -68,26 +69,46 @@ Layout: 2-column grid for type+candidate and position+language, full-width for e
 <FormSection title="Thông tin email" icon="📧">
   <div className="grid grid-cols-2 gap-3.5">
     <FieldGroup label="Loại email" required>
-      <Select onValueChange={(v) => form.setValue('type', v as EmailType)} defaultValue="invite">
-        <SelectTrigger><SelectValue /></SelectTrigger>
+      <Select
+        onValueChange={(v) => form.setValue("type", v as EmailType)}
+        defaultValue="invite"
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
-          {EMAIL_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+          {EMAIL_TYPES.map((t) => (
+            <SelectItem key={t.value} value={t.value}>
+              {t.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </FieldGroup>
 
     <FieldGroup label="Tên ứng viên" required>
-      <Input {...form.register('candidate')} placeholder="VD: Anh Minh / Chị Lan" />
+      <Input
+        {...form.register("candidate")}
+        placeholder="VD: Anh Minh / Chị Lan"
+      />
       {/* error message */}
     </FieldGroup>
 
     <FieldGroup label="Vị trí ứng tuyển">
-      <Input {...form.register('position')} placeholder="VD: Senior Data Engineer" />
+      <Input
+        {...form.register("position")}
+        placeholder="VD: Senior Data Engineer"
+      />
     </FieldGroup>
 
     <FieldGroup label="Ngôn ngữ email">
-      <Select onValueChange={(v) => form.setValue('language', v as 'vi' | 'en')} defaultValue="vi">
-        <SelectTrigger><SelectValue /></SelectTrigger>
+      <Select
+        onValueChange={(v) => form.setValue("language", v as "vi" | "en")}
+        defaultValue="vi"
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="vi">Tiếng Việt</SelectItem>
           <SelectItem value="en">English</SelectItem>
@@ -99,7 +120,7 @@ Layout: 2-column grid for type+candidate and position+language, full-width for e
   <div className="mt-3.5">
     <FieldGroup label="Thông tin thêm (tuỳ chọn)">
       <Textarea
-        {...form.register('extra')}
+        {...form.register("extra")}
         placeholder="VD: PV Round 2 vào 10h sáng 15/4, Google Meet..."
         rows={3}
       />
@@ -114,19 +135,19 @@ Layout: 2-column grid for type+candidate and position+language, full-width for e
 
 ```ts
 export function buildEmailPrompt(data: EmailFormValues): string {
-  const typeLabel = EMAIL_TYPE_LABELS[data.type]
+  const typeLabel = EMAIL_TYPE_LABELS[data.type];
   return `Viết email ${typeLabel} cho ứng viên.
 Tên ứng viên: ${data.candidate}
-${data.position ? 'Vị trí: ' + data.position : ''}
-Ngôn ngữ: ${data.language === 'vi' ? 'Tiếng Việt' : 'English'}
-${data.extra ? 'Thông tin thêm: ' + data.extra : ''}
+${data.position ? "Vị trí: " + data.position : ""}
+Ngôn ngữ: ${data.language === "vi" ? "Tiếng Việt" : "English"}
+${data.extra ? "Thông tin thêm: " + data.extra : ""}
 
 Yêu cầu:
 - Tone: Semi-formal, thân thiện, chuyên nghiệp — đúng phong cách của chị Hue
 - Cá nhân hóa theo tên ứng viên
 - Không quá template, có cảm xúc thật
-- Người gửi: Hue Nguyen, TA Manager, Masan Group
-- Viết email đầy đủ gồm subject line`
+- Người gửi: Hue Nguyen, TA Manager
+- Viết email đầy đủ gồm subject line`;
 }
 ```
 
@@ -137,56 +158,56 @@ Yêu cầu:
 **Client component.** Same pattern as `JdWriterContainer`.
 
 ```tsx
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useApiKeyStore } from '@/stores/apiKeyStore'
-import { useSettingsStore } from '@/stores/settingsStore'
-import { useClaudeApi } from '@/hooks/useClaudeApi'
-import { buildSystemPrompt, buildEmailPrompt } from '@/lib/prompts'
-import { formatText } from '@/lib/formatText'
-import { emailFormSchema, EmailFormValues } from '../types'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useApiKeyStore } from "@/stores/apiKeyStore";
+import { useSettingsStore } from "@/stores/settingsStore";
+import { useClaudeApi } from "@/hooks/useClaudeApi";
+import { buildSystemPrompt, buildEmailPrompt } from "@/lib/prompts";
+import { formatText } from "@/lib/formatText";
+import { emailFormSchema, EmailFormValues } from "../types";
 
 export default function EmailWriterContainer() {
-  const [output, setOutput] = useState('')
-  const [showOutput, setShowOutput] = useState(false)
+  const [output, setOutput] = useState("");
+  const [showOutput, setShowOutput] = useState(false);
 
-  const { status } = useApiKeyStore()
-  const { getContext } = useSettingsStore()
-  const { isLoading, call } = useClaudeApi()
+  const { status } = useApiKeyStore();
+  const { getContext } = useSettingsStore();
+  const { isLoading, call } = useClaudeApi();
 
   const form = useForm<EmailFormValues>({
     resolver: zodResolver(emailFormSchema),
     defaultValues: {
-      type: 'invite',
-      candidate: '',
-      position: '',
-      language: 'vi',
-      extra: '',
+      type: "invite",
+      candidate: "",
+      position: "",
+      language: "vi",
+      extra: "",
     },
-  })
+  });
 
   const handleSubmit = async (data: EmailFormValues) => {
-    setShowOutput(false)
+    setShowOutput(false);
     const result = await call({
-      messages: [{ role: 'user', content: buildEmailPrompt(data) }],
-      system: buildSystemPrompt(getContext('ta_ctx_email')),
+      messages: [{ role: "user", content: buildEmailPrompt(data) }],
+      system: buildSystemPrompt(getContext("ta_ctx_email")),
       maxTokens: 2000,
-    })
+    });
     if (result) {
-      setOutput(result)
-      setShowOutput(true)
+      setOutput(result);
+      setShowOutput(true);
     }
-  }
+  };
 
   return (
     <div className="max-w-[720px]">
       <EmailForm form={form} onSubmit={handleSubmit} />
       <RunButton
         isLoading={isLoading}
-        disabled={status !== 'valid'}
+        disabled={status !== "valid"}
         label="Viết email ngay"
         onClick={form.handleSubmit(handleSubmit)}
       />
@@ -196,12 +217,14 @@ export default function EmailWriterContainer() {
         actions={
           <>
             <CopyButton getText={() => output} />
-            <button onClick={() => setShowOutput(false)} className="...">✕ Xóa</button>
+            <button onClick={() => setShowOutput(false)} className="...">
+              ✕ Xóa
+            </button>
           </>
         }
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -209,16 +232,16 @@ export default function EmailWriterContainer() {
 
 ## BRD Requirements Covered
 
-| ID | Requirement | Covered |
-|----|-------------|:-------:|
-| EMAIL-01 | Email type select | ✅ |
-| EMAIL-02 | Candidate name (required) + position | ✅ |
-| EMAIL-03 | Language select (Vi / En) | ✅ |
-| EMAIL-04 | Optional extra context | ✅ |
-| EMAIL-05 | Full email with subject line | ✅ (in prompt) |
-| EMAIL-06 | Semi-formal, personalized tone | ✅ (in prompt) |
-| EMAIL-07 | Sender: Hue Nguyen, Masan Group | ✅ (in prompt) |
-| EMAIL-08 | Copyable output | ✅ |
+| ID       | Requirement                          |    Covered     |
+| -------- | ------------------------------------ | :------------: |
+| EMAIL-01 | Email type select                    |       ✅       |
+| EMAIL-02 | Candidate name (required) + position |       ✅       |
+| EMAIL-03 | Language select (Vi / En)            |       ✅       |
+| EMAIL-04 | Optional extra context               |       ✅       |
+| EMAIL-05 | Full email with subject line         | ✅ (in prompt) |
+| EMAIL-06 | Semi-formal, personalized tone       | ✅ (in prompt) |
+| EMAIL-07 | Sender: Hue Nguyen                   | ✅ (in prompt) |
+| EMAIL-08 | Copyable output                      |       ✅       |
 
 ---
 

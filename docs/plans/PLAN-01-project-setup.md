@@ -159,7 +159,7 @@ Copy the `@ss-themes/modern-minimal` theme CSS into `src/app/globals.css`. Repla
     --font-sans:
       "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
     --font-serif: Source Serif 4, serif;
-    --font-mono: JetBrains Mono, monospace;
+    --font-mono: "Roboto Mono", monospace;
 
     --radius: 0.375rem;
 
@@ -280,7 +280,7 @@ Copy the `@ss-themes/modern-minimal` theme CSS into `src/app/globals.css`. Repla
 }
 ```
 
-**TA Assistant overrides** — add after the theme block for BRD design tokens: body background `#f7f4ef`, scrollbar styling, noise texture overlay. Override `--font-sans`, `--font-serif`, `--font-mono` in `:root` if using Fraunces/Epilogue/DM Mono (see Step 4).
+**TA Assistant overrides** — add after the theme block for BRD design tokens: body background `#f7f4ef`, scrollbar styling, noise texture overlay. Override `--font-sans`, `--font-serif`, `--font-mono` in `:root` Roboto Mono (see Step 4).
 
 ---
 

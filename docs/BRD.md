@@ -1,4 +1,5 @@
 # Business Requirements Document (BRD)
+
 ## TA Assistant — AI-Powered Talent Acquisition Toolkit
 
 **Document Version:** 1.2  
@@ -34,15 +35,15 @@ Recruiting for tech roles (Data Engineering, Software Engineering, Cloud/Infrast
 
 ### 2.3 Target User
 
-| Attribute | Detail |
-|---|---|
-| Name | Hue Nguyen |
-| Role | Talent Acquisition Manager — Technology Transformation |
-| Company | Masan Group (entities: Masan Tech, Masan Consumer, etc.) |
-| Domain | Tech Hiring: Data, Software Engineering, Cloud/Infra, Security, ERP |
-| Experience | 10+ years in TA, including 10 years at VNG Corporation |
-| Work Style | IC, hands-on, data-driven |
-| Language | Vietnamese (primary), English (tech terminology) |
+| Attribute  | Detail                                                              |
+| ---------- | ------------------------------------------------------------------- |
+| Name       | Hue Nguyen                                                          |
+| Role       | Talent Acquisition Manager — Technology Transformation              |
+| Company    | Masan Group (entities: Masan Tech, Masan Consumer, etc.)            |
+| Domain     | Tech Hiring: Data, Software Engineering, Cloud/Infra, Security, ERP |
+| Experience | 10+ years in TA, including 10 years at VNG Corporation              |
+| Work Style | IC, hands-on, data-driven                                           |
+| Language   | Vietnamese (primary), English (tech terminology)                    |
 
 ---
 
@@ -98,11 +99,11 @@ The application shell is divided into three persistent columns rendered side by 
 
 ### 4.2 Column 1 — Sidebar
 
-| Property | Detail |
-|---|---|
-| Width | Fixed at 280px |
-| Background | Dark (near-black ink color `#1a1714`) |
-| Overflow | Internal vertical scroll for navigation items |
+| Property   | Detail                                           |
+| ---------- | ------------------------------------------------ |
+| Width      | Fixed at 280px                                   |
+| Background | Dark (near-black ink color `#1a1714`)            |
+| Overflow   | Internal vertical scroll for navigation items    |
 | Visibility | Hidden on viewports narrower than 720px (mobile) |
 
 **Sidebar Sections (top to bottom):**
@@ -110,19 +111,19 @@ The application shell is divided into three persistent columns rendered side by 
 1. **Brand Header** — Application logo icon, name ("TA Assistant"), and organization subtitle ("Masan Group · Tech Hiring")
 2. **API Key Row** — Password input with a live status dot (gray / green / red) indicating key validity
 3. **Navigation** — Grouped list of tools; clicking a tool activates it in the Content Area. Groups:
-   - *Công cụ chính:* Trợ lý AI, CV Parser, Soạn JD, Viết Email UV, Đánh giá CV vs JD
-   - *Nội dung:* Tóm tắt Candidate, Salary Benchmark
-   - *Cài đặt:* Settings
+   - _Công cụ chính:_ Trợ lý AI, CV Parser, Soạn JD, Viết Email UV, Đánh giá CV vs JD
+   - _Nội dung:_ Tóm tắt Candidate, Salary Benchmark
+   - _Cài đặt:_ Settings
 4. **Profile Chip** — Avatar, user name ("Hue Nguyen"), and role ("TA Manager · Tech") pinned at the bottom
 
 ### 4.3 Column 2 — Content Area
 
-| Property | Detail |
-|---|---|
-| Width | Flexible (`flex: 1`), fills all remaining space between Sidebar and AI Chat Panel |
-| Background | Warm off-white (`#f7f4ef`) |
-| Overflow | Internal vertical scroll |
-| Structure | Tool Header (fixed at top) + Tool Body (scrollable) |
+| Property   | Detail                                                                            |
+| ---------- | --------------------------------------------------------------------------------- |
+| Width      | Flexible (`flex: 1`), fills all remaining space between Sidebar and AI Chat Panel |
+| Background | Warm off-white (`#f7f4ef`)                                                        |
+| Overflow   | Internal vertical scroll                                                          |
+| Structure  | Tool Header (fixed at top) + Tool Body (scrollable)                               |
 
 **Content Area Sub-sections:**
 
@@ -136,13 +137,13 @@ The application shell is divided into three persistent columns rendered side by 
 
 ### 4.4 Column 3 — AI Chat Panel
 
-| Property | Detail |
-|---|---|
-| Width | Fixed at 360px |
-| Background | White surface with border separator on the left |
-| Overflow | Chat message list scrolls internally |
-| Visibility | Always present regardless of which tool is active in Column 2 |
-| Purpose | Provides instant free-form AI assistance without navigating away from the current tool |
+| Property   | Detail                                                                                 |
+| ---------- | -------------------------------------------------------------------------------------- |
+| Width      | Fixed at 360px                                                                         |
+| Background | White surface with border separator on the left                                        |
+| Overflow   | Chat message list scrolls internally                                                   |
+| Visibility | Always present regardless of which tool is active in Column 2                          |
+| Purpose    | Provides instant free-form AI assistance without navigating away from the current tool |
 
 **AI Chat Panel Sub-sections (top to bottom):**
 
@@ -158,18 +159,20 @@ The application shell is divided into three persistent columns rendered side by 
 **Relationship between Column 2 and Column 3:**
 
 The AI Chat panel in Column 3 is context-aware and complements Column 2. For example:
+
 - While working on a JD form in Column 2, the user can simultaneously ask the AI in Column 3 for inspiration or clarification
 - The chat maintains its full conversation history across tool switches in Column 2
 - The AI Chat tool entry in the sidebar navigation scrolls Column 3 into focus on mobile (where columns collapse)
 
 ### 4.5 Layout Behavior & Responsiveness
 
-| Breakpoint | Behavior |
-|---|---|
-| `> 720px` (desktop) | Full 3-column layout. All columns visible simultaneously |
-| `≤ 720px` (mobile) | Sidebar hidden. Content Area and AI Chat Panel stack or Column 2 takes full width |
+| Breakpoint          | Behavior                                                                          |
+| ------------------- | --------------------------------------------------------------------------------- |
+| `> 720px` (desktop) | Full 3-column layout. All columns visible simultaneously                          |
+| `≤ 720px` (mobile)  | Sidebar hidden. Content Area and AI Chat Panel stack or Column 2 takes full width |
 
 **Column sizing rules:**
+
 - Sidebar: `width: 280px; min-width: 280px; flex-shrink: 0`
 - AI Chat Panel: `width: 360px; min-width: 360px; flex-shrink: 0`
 - Content Area: `flex: 1` — absorbs all remaining horizontal space
@@ -182,43 +185,44 @@ The AI Chat panel in Column 3 is context-aware and complements Column 2. For exa
 
 ### 5.1 Tool Navigation
 
-| ID | Requirement |
-|---|---|
+| ID     | Requirement                                                                                                                                                  |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | NAV-01 | The application shall render a 3-column layout: Sidebar (Column 1), Content Area (Column 2), AI Chat Panel (Column 3) — see §4 for full layout specification |
-| NAV-02 | The sidebar shall provide persistent navigation listing all available tools |
-| NAV-03 | The active tool shall be visually highlighted in the sidebar navigation |
-| NAV-04 | Selecting a tool in the sidebar shall update the Content Area (Column 2); the AI Chat Panel (Column 3) shall remain unchanged |
-| NAV-05 | Each tool shall display its name and a short description in the Content Area tool header when selected |
-| NAV-06 | Navigation shall group tools into logical sections: **Công cụ chính** (Core Tools) and **Nội dung** (Content) |
-| NAV-07 | A **Settings** entry shall appear in the sidebar navigation, accessible at all times |
+| NAV-02 | The sidebar shall provide persistent navigation listing all available tools                                                                                  |
+| NAV-03 | The active tool shall be visually highlighted in the sidebar navigation                                                                                      |
+| NAV-04 | Selecting a tool in the sidebar shall update the Content Area (Column 2); the AI Chat Panel (Column 3) shall remain unchanged                                |
+| NAV-05 | Each tool shall display its name and a short description in the Content Area tool header when selected                                                       |
+| NAV-06 | Navigation shall group tools into logical sections: **Công cụ chính** (Core Tools) and **Nội dung** (Content)                                                |
+| NAV-07 | A **Settings** entry shall appear in the sidebar navigation, accessible at all times                                                                         |
 
 ### 5.2 API Key Management
 
-| ID | Requirement |
-|---|---|
-| API-01 | The user shall be able to input their Anthropic API key via a password field in the sidebar |
-| API-02 | The API key shall be persisted in `localStorage` so it survives page reloads |
+| ID     | Requirement                                                                                                                         |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| API-01 | The user shall be able to input their Anthropic API key via a password field in the sidebar                                         |
+| API-02 | The API key shall be persisted in `localStorage` so it survives page reloads                                                        |
 | API-03 | A visual status indicator (dot) shall reflect the key validation state: neutral (empty), green (valid format), red (invalid format) |
-| API-04 | All action buttons across all tools shall be disabled until a valid API key is present |
-| API-05 | Key validation shall check for the `sk-ant-` prefix as a minimum format check |
-| API-06 | The API key shall also be editable from within the Settings panel (see §5.10) |
+| API-04 | All action buttons across all tools shall be disabled until a valid API key is present                                              |
+| API-05 | Key validation shall check for the `sk-ant-` prefix as a minimum format check                                                       |
+| API-06 | The API key shall also be editable from within the Settings panel (see §5.10)                                                       |
 
 ### 5.3 AI Chat (Trợ lý AI)
 
-| ID | Requirement |
-|---|---|
+| ID      | Requirement                                                                                                                                                                        |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CHAT-01 | The AI Chat shall be rendered permanently in Column 3 (the right-hand panel) and shall remain visible and interactive at all times, regardless of which tool is active in Column 2 |
-| CHAT-02 | The user shall be able to send free-form text messages to the AI assistant |
-| CHAT-03 | The assistant shall respond in Vietnamese, in a semi-formal and friendly tone |
-| CHAT-04 | The chat interface shall maintain full conversation history within the session and shall not reset when the user switches tools in Column 2 |
-| CHAT-05 | The assistant shall be contextualized as a personal TA assistant for Hue Nguyen at Masan Group, specialized in tech hiring in the Vietnam market |
-| CHAT-06 | A set of quick-prompt chips shall be displayed above the input to suggest common tasks |
-| CHAT-07 | Pressing `Enter` shall send the message; `Shift+Enter` shall insert a newline |
-| CHAT-08 | The textarea shall auto-resize as the user types, up to a maximum height |
-| CHAT-09 | A "thinking" animation (three bouncing dots) shall be displayed while awaiting the API response |
-| CHAT-10 | Assistant responses shall render basic markdown: bold, italic, inline code, headers, and unordered lists |
+| CHAT-02 | The user shall be able to send free-form text messages to the AI assistant                                                                                                         |
+| CHAT-03 | The assistant shall respond in Vietnamese, in a semi-formal and friendly tone                                                                                                      |
+| CHAT-04 | The chat interface shall maintain full conversation history within the session and shall not reset when the user switches tools in Column 2                                        |
+| CHAT-05 | The assistant shall be contextualized as a personal TA assistant for Hue Nguyen at Masan Group, specialized in tech hiring in the Vietnam market                                   |
+| CHAT-06 | A set of quick-prompt chips shall be displayed above the input to suggest common tasks                                                                                             |
+| CHAT-07 | Pressing `Enter` shall send the message; `Shift+Enter` shall insert a newline                                                                                                      |
+| CHAT-08 | The textarea shall auto-resize as the user types, up to a maximum height                                                                                                           |
+| CHAT-09 | A "thinking" animation (three bouncing dots) shall be displayed while awaiting the API response                                                                                    |
+| CHAT-10 | Assistant responses shall render basic markdown: bold, italic, inline code, headers, and unordered lists                                                                           |
 
 **Quick Prompt Examples:**
+
 - Soạn JD Data Engineer Senior
 - Email mời phỏng vấn
 - Salary range Cloud Architect HCM
@@ -227,110 +231,110 @@ The AI Chat panel in Column 3 is context-aware and complements Column 2. For exa
 
 ### 5.4 CV Parser
 
-| ID | Requirement |
-|---|---|
-| CVP-01 | The user shall be able to upload one or more CV files simultaneously |
-| CVP-02 | Supported file formats: PDF, JPG, JPEG, PNG |
-| CVP-03 | Upload shall support both click-to-browse and drag-and-drop interactions |
-| CVP-04 | Uploaded file names shall be displayed in a confirmation pill after selection |
-| CVP-05 | The user shall be able to select which fields to extract using toggleable chip controls |
+| ID     | Requirement                                                                                                                     |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| CVP-01 | The user shall be able to upload one or more CV files simultaneously                                                            |
+| CVP-02 | Supported file formats: PDF, JPG, JPEG, PNG                                                                                     |
+| CVP-03 | Upload shall support both click-to-browse and drag-and-drop interactions                                                        |
+| CVP-04 | Uploaded file names shall be displayed in a confirmation pill after selection                                                   |
+| CVP-05 | The user shall be able to select which fields to extract using toggleable chip controls                                         |
 | CVP-06 | The tool shall send each CV file to the Claude API as a base64-encoded document or image and receive a structured JSON response |
-| CVP-07 | Parsed results shall be displayed as individual labeled cards in a responsive grid |
-| CVP-08 | The tool shall generate a tab-separated data row suitable for pasting directly into Excel |
-| CVP-09 | The user shall be able to copy the tab-separated data to the clipboard |
-| CVP-10 | The user shall be able to download results as a UTF-8 encoded CSV file |
-| CVP-11 | When parsing multiple CVs, a progress indicator shall display the current file count (e.g., "Parsing 2/5...") |
+| CVP-07 | Parsed results shall be displayed as individual labeled cards in a responsive grid                                              |
+| CVP-08 | The tool shall generate a tab-separated data row suitable for pasting directly into Excel                                       |
+| CVP-09 | The user shall be able to copy the tab-separated data to the clipboard                                                          |
+| CVP-10 | The user shall be able to download results as a UTF-8 encoded CSV file                                                          |
+| CVP-11 | When parsing multiple CVs, a progress indicator shall display the current file count (e.g., "Parsing 2/5...")                   |
 
 **Extractable Fields:**
 
-| Field Key | Label |
-|---|---|
-| `name` | Họ và tên |
-| `phone` | SĐT |
-| `email` | Email |
-| `location` | Địa chỉ |
-| `current_company` | Công ty hiện tại |
-| `current_title` | Vị trí hiện tại |
-| `years_exp` | Số năm kinh nghiệm |
-| `skills` | Skills / Tech Stack |
-| `education` | Học vấn |
-| `expected_salary` | Lương mong muốn |
-| `summary` | Tóm tắt nhanh |
+| Field Key         | Label               |
+| ----------------- | ------------------- |
+| `name`            | Họ và tên           |
+| `phone`           | SĐT                 |
+| `email`           | Email               |
+| `location`        | Địa chỉ             |
+| `current_company` | Công ty hiện tại    |
+| `current_title`   | Vị trí hiện tại     |
+| `years_exp`       | Số năm kinh nghiệm  |
+| `skills`          | Skills / Tech Stack |
+| `education`       | Học vấn             |
+| `expected_salary` | Lương mong muốn     |
+| `summary`         | Tóm tắt nhanh       |
 
 ### 5.5 JD Writer (Soạn JD)
 
-| ID | Requirement |
-|---|---|
-| JD-01 | The user shall provide the job title (required), level, entity/BU, salary range, tech stack, and team context |
-| JD-02 | Level options: Junior, Mid, Senior, Lead, Manager, Head, Director |
-| JD-03 | The AI shall generate a complete JD in Vietnamese with English tech terminology |
+| ID    | Requirement                                                                                                                      |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------- |
+| JD-01 | The user shall provide the job title (required), level, entity/BU, salary range, tech stack, and team context                    |
+| JD-02 | Level options: Junior, Mid, Senior, Lead, Manager, Head, Director                                                                |
+| JD-03 | The AI shall generate a complete JD in Vietnamese with English tech terminology                                                  |
 | JD-04 | The generated JD shall follow a standard format: About Us, Role Overview, Responsibilities, Requirements, Nice-to-have, Benefits |
-| JD-05 | The tone shall be semi-formal and attractive to engineers/tech talent |
-| JD-06 | The JD shall highlight Masan Group culture: transformation, scale, impact |
-| JD-07 | The output shall be copyable to clipboard |
+| JD-05 | The tone shall be semi-formal and attractive to engineers/tech talent                                                            |
+| JD-06 | The JD shall highlight Masan Group culture: transformation, scale, impact                                                        |
+| JD-07 | The output shall be copyable to clipboard                                                                                        |
 
 ### 5.6 Email Writer (Viết Email UV)
 
-| ID | Requirement |
-|---|---|
-| EMAIL-01 | The user shall select the email type from a predefined list |
-| EMAIL-02 | Candidate name (required) and applied position shall be provided as inputs |
-| EMAIL-03 | The user shall select the output language: Vietnamese or English |
+| ID       | Requirement                                                                                         |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| EMAIL-01 | The user shall select the email type from a predefined list                                         |
+| EMAIL-02 | Candidate name (required) and applied position shall be provided as inputs                          |
+| EMAIL-03 | The user shall select the output language: Vietnamese or English                                    |
 | EMAIL-04 | An optional free-text field shall allow additional context (e.g., interview time, rejection reason) |
-| EMAIL-05 | The AI shall generate a complete email including a subject line |
-| EMAIL-06 | The tone shall be semi-formal, personalized — not generic template language |
-| EMAIL-07 | The sender shall be identified as: Hue Nguyen, TA Manager, Masan Group |
-| EMAIL-08 | The output shall be copyable to clipboard |
+| EMAIL-05 | The AI shall generate a complete email including a subject line                                     |
+| EMAIL-06 | The tone shall be semi-formal, personalized — not generic template language                         |
+| EMAIL-07 | The sender shall be identified as: Hue Nguyen, TA Manager                                           |
+| EMAIL-08 | The output shall be copyable to clipboard                                                           |
 
 **Supported Email Types:**
 
-| Value | Description |
-|---|---|
-| `invite` | Mời phỏng vấn (Interview invitation) |
-| `reject` | Từ chối ứng viên (Candidate rejection) |
-| `offer` | Thông báo offer (Offer notification) |
+| Value      | Description                                        |
+| ---------- | -------------------------------------------------- |
+| `invite`   | Mời phỏng vấn (Interview invitation)               |
+| `reject`   | Từ chối ứng viên (Candidate rejection)             |
+| `offer`    | Thông báo offer (Offer notification)               |
 | `followup` | Follow-up sau phỏng vấn (Post-interview follow-up) |
-| `pipeline` | Giữ pipeline — on hold (Pipeline hold) |
+| `pipeline` | Giữ pipeline — on hold (Pipeline hold)             |
 
 ### 5.7 CV vs JD Evaluation (Đánh giá CV vs JD)
 
-| ID | Requirement |
-|---|---|
-| EVAL-01 | The user shall paste or type a JD summary/requirements (required) |
+| ID      | Requirement                                                                   |
+| ------- | ----------------------------------------------------------------------------- |
+| EVAL-01 | The user shall paste or type a JD summary/requirements (required)             |
 | EVAL-02 | The user shall paste or type the candidate's CV content or summary (required) |
-| EVAL-03 | The AI shall return a structured evaluation with the following sections: |
-| | — **Fit Score**: X/10 with rationale |
-| | — **Điểm mạnh**: Top 3–4 strengths that match the JD |
-| | — **Điểm cần clarify**: Gaps or unclear areas |
-| | — **Câu hỏi phỏng vấn gợi ý**: 3–5 recommended interview questions |
-| | — **Khuyến nghị**: Move forward recommendation with reasoning |
-| EVAL-04 | The output shall be copyable to clipboard |
+| EVAL-03 | The AI shall return a structured evaluation with the following sections:      |
+|         | — **Fit Score**: X/10 with rationale                                          |
+|         | — **Điểm mạnh**: Top 3–4 strengths that match the JD                          |
+|         | — **Điểm cần clarify**: Gaps or unclear areas                                 |
+|         | — **Câu hỏi phỏng vấn gợi ý**: 3–5 recommended interview questions            |
+|         | — **Khuyến nghị**: Move forward recommendation with reasoning                 |
+| EVAL-04 | The output shall be copyable to clipboard                                     |
 
 ### 5.8 Candidate Summary (Tóm tắt Candidate)
 
-| ID | Requirement |
-|---|---|
-| SUM-01 | The user shall provide the target position (optional) and candidate info (required) |
-| SUM-02 | The user may optionally include interview round results and feedback |
-| SUM-03 | The AI shall generate a concise summary of ~150–200 words, formatted for a busy CTO or Tech Director |
+| ID     | Requirement                                                                                                                                               |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SUM-01 | The user shall provide the target position (optional) and candidate info (required)                                                                       |
+| SUM-02 | The user may optionally include interview round results and feedback                                                                                      |
+| SUM-03 | The AI shall generate a concise summary of ~150–200 words, formatted for a busy CTO or Tech Director                                                      |
 | SUM-04 | Summary sections: Overall snapshot, Background & notable experience, Skills match, Points to note, Interview results (if provided), Recommended next step |
-| SUM-05 | Format: bullet points, scannable — not dense paragraphs |
-| SUM-06 | The output shall be copyable to clipboard |
+| SUM-05 | Format: bullet points, scannable — not dense paragraphs                                                                                                   |
+| SUM-06 | The output shall be copyable to clipboard                                                                                                                 |
 
 ### 5.9 Salary Benchmark (Salary Benchmark)
 
-| ID | Requirement |
-|---|---|
+| ID     | Requirement                                                                                           |
+| ------ | ----------------------------------------------------------------------------------------------------- |
 | SAL-01 | The user shall input: position title (required), level, location, years of experience, and tech stack |
-| SAL-02 | Location options: TP.HCM, Hà Nội, Đà Nẵng, Remote |
-| SAL-03 | The AI shall return a structured benchmark report with: |
-| | — **Salary range** (gross/month in VND) segmented as Median / Top 25% / Top 10% |
-| | — **Market comparison**: product company vs outsourcing vs startup |
-| | — **Trend**: whether the salary range is growing, stable, or highly competitive |
-| | — **Common benefits** beyond base salary |
-| | — **Recommendation** for Hue when making an offer at Masan |
-| SAL-04 | The AI shall note that data is estimated based on Vietnam market knowledge for 2024–2025 |
-| SAL-05 | The output shall be copyable to clipboard |
+| SAL-02 | Location options: TP.HCM, Hà Nội, Đà Nẵng, Remote                                                     |
+| SAL-03 | The AI shall return a structured benchmark report with:                                               |
+|        | — **Salary range** (gross/month in VND) segmented as Median / Top 25% / Top 10%                       |
+|        | — **Market comparison**: product company vs outsourcing vs startup                                    |
+|        | — **Trend**: whether the salary range is growing, stable, or highly competitive                       |
+|        | — **Common benefits** beyond base salary                                                              |
+|        | — **Recommendation** for Hue when making an offer at Masan                                            |
+| SAL-04 | The AI shall note that data is estimated based on Vietnam market knowledge for 2024–2025              |
+| SAL-05 | The output shall be copyable to clipboard                                                             |
 
 ### 5.10 Settings
 
@@ -338,40 +342,40 @@ The Settings panel is a dedicated tool view accessible from the sidebar. It cons
 
 #### 5.10.1 API Key
 
-| ID | Requirement |
-|---|---|
-| SET-01 | The Settings panel shall display the Anthropic API key in an editable password field |
+| ID     | Requirement                                                                                                                      |
+| ------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| SET-01 | The Settings panel shall display the Anthropic API key in an editable password field                                             |
 | SET-02 | Changes to the API key in Settings shall sync with the sidebar API key field and vice versa — both inputs reflect the same value |
-| SET-03 | The key validation status indicator shall update in real time as the user types in Settings |
-| SET-04 | The API key shall be saved to `localStorage` key `ta_api_key` |
+| SET-03 | The key validation status indicator shall update in real time as the user types in Settings                                      |
+| SET-04 | The API key shall be saved to `localStorage` key `ta_api_key`                                                                    |
 
 #### 5.10.2 Business Context Configuration
 
 Business Context is a free-text block that the user can configure per tool. It is appended to the AI system prompt or injected into the tool prompt at call time, allowing the assistant to produce output that reflects the user's current organization, team, role, and preferences.
 
-| ID | Requirement |
-|---|---|
-| SET-05 | The Settings panel shall display a separate Business Context textarea for each of the following tools: AI Chat, Soạn JD, Viết Email UV, Đánh giá CV vs JD, Tóm tắt Candidate, Salary Benchmark |
+| ID     | Requirement                                                                                                                                                                                       |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SET-05 | The Settings panel shall display a separate Business Context textarea for each of the following tools: AI Chat, Soạn JD, Viết Email UV, Đánh giá CV vs JD, Tóm tắt Candidate, Salary Benchmark    |
 | SET-06 | Each Business Context field shall have a descriptive label and placeholder explaining what information is useful to include (e.g., company name, team structure, hiring target, tone preferences) |
-| SET-07 | Each Business Context value shall be persisted independently in `localStorage` using a tool-specific key (e.g., `ta_ctx_chat`, `ta_ctx_jd`, `ta_ctx_email`) |
-| SET-08 | On page load, each tool shall read its corresponding Business Context from `localStorage` and apply it to subsequent API calls |
-| SET-09 | When a Business Context field is non-empty, its value shall be appended to the relevant AI prompt at call time, after the static system prompt content |
-| SET-10 | The user shall be able to clear any individual Business Context field independently |
-| SET-11 | A **Save Settings** button shall confirm that all values have been written to `localStorage`, triggering a success toast notification |
-| SET-12 | Settings shall be organized into clearly labeled sections: **API Configuration** and **Business Context per Tool** |
+| SET-07 | Each Business Context value shall be persisted independently in `localStorage` using a tool-specific key (e.g., `ta_ctx_chat`, `ta_ctx_jd`, `ta_ctx_email`)                                       |
+| SET-08 | On page load, each tool shall read its corresponding Business Context from `localStorage` and apply it to subsequent API calls                                                                    |
+| SET-09 | When a Business Context field is non-empty, its value shall be appended to the relevant AI prompt at call time, after the static system prompt content                                            |
+| SET-10 | The user shall be able to clear any individual Business Context field independently                                                                                                               |
+| SET-11 | A **Save Settings** button shall confirm that all values have been written to `localStorage`, triggering a success toast notification                                                             |
+| SET-12 | Settings shall be organized into clearly labeled sections: **API Configuration** and **Business Context per Tool**                                                                                |
 
 #### 5.10.3 Default Business Context Values
 
 On first load (before the user customizes), each tool shall use the following built-in defaults that reflect Hue Nguyen's profile at Masan Group. If the user saves custom values, those override the defaults.
 
-| Tool | Default Context |
-|---|---|
-| AI Chat | Hue Nguyen, TA Manager at Masan Group. Specializes in tech roles (Data, Software Engineering, Cloud, Security, ERP). Vietnam market, TP.HCM. 10+ years TA experience. |
-| Soạn JD | Company: Masan Group — a large conglomerate with entities including Masan Tech, Masan Consumer. Tone: semi-formal, tech-savvy, attractive to engineers. Language: Vietnamese with English tech terms. |
-| Viết Email UV | Sender: Hue Nguyen, TA Manager, Masan Group. Tone: semi-formal, warm, personalized. Not a generic template. |
-| Đánh giá CV vs JD | Focus on tech roles. Provide objective, structured evaluation with fit score, strengths, gaps, and suggested interview questions. |
-| Tóm tắt Candidate | Summary audience: CTO or Tech Director. Keep to ~150–200 words. Bullet point format. Scannable. |
-| Salary Benchmark | Market: Vietnam tech sector, 2024–2025. Primary location: TP.HCM. Include product company vs outsourcing vs startup comparison. |
+| Tool              | Default Context                                                                                                                                                                                       |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AI Chat           | Hue Nguyen, TA Manager at Masan Group. Specializes in tech roles (Data, Software Engineering, Cloud, Security, ERP). Vietnam market, TP.HCM. 10+ years TA experience.                                 |
+| Soạn JD           | Company: Masan Group — a large conglomerate with entities including Masan Tech, Masan Consumer. Tone: semi-formal, tech-savvy, attractive to engineers. Language: Vietnamese with English tech terms. |
+| Viết Email UV     | Sender: Hue Nguyen, TA Manager. Tone: semi-formal, warm, personalized. Not a generic template.                                                                                                        |
+| Đánh giá CV vs JD | Focus on tech roles. Provide objective, structured evaluation with fit score, strengths, gaps, and suggested interview questions.                                                                     |
+| Tóm tắt Candidate | Summary audience: CTO or Tech Director. Keep to ~150–200 words. Bullet point format. Scannable.                                                                                                       |
+| Salary Benchmark  | Market: Vietnam tech sector, 2024–2025. Primary location: TP.HCM. Include product company vs outsourcing vs startup comparison.                                                                       |
 
 ---
 
@@ -379,38 +383,38 @@ On first load (before the user customizes), each tool shall use the following bu
 
 ### 6.1 Performance
 
-| ID | Requirement |
-|---|---|
-| PERF-01 | A loading state ("Đang xử lý...") shall be shown on the action button during API calls |
+| ID      | Requirement                                                                                  |
+| ------- | -------------------------------------------------------------------------------------------- |
+| PERF-01 | A loading state ("Đang xử lý...") shall be shown on the action button during API calls       |
 | PERF-02 | Output sections shall animate smoothly into view upon receiving results (fade-up transition) |
-| PERF-03 | Chat messages shall animate in on appearance |
+| PERF-03 | Chat messages shall animate in on appearance                                                 |
 
 ### 6.2 Usability
 
-| ID | Requirement |
-|---|---|
-| UX-01 | Toast notifications shall confirm clipboard copy actions and report errors |
-| UX-02 | Toast notifications shall auto-dismiss after 3 seconds |
-| UX-03 | Form validation shall prevent API calls with missing required fields and show a toast error |
-| UX-04 | Output areas shall include a clear/dismiss button |
-| UX-05 | The sidebar (Column 1) shall be hidden on screens narrower than 720px |
+| ID    | Requirement                                                                                                      |
+| ----- | ---------------------------------------------------------------------------------------------------------------- |
+| UX-01 | Toast notifications shall confirm clipboard copy actions and report errors                                       |
+| UX-02 | Toast notifications shall auto-dismiss after 3 seconds                                                           |
+| UX-03 | Form validation shall prevent API calls with missing required fields and show a toast error                      |
+| UX-04 | Output areas shall include a clear/dismiss button                                                                |
+| UX-05 | The sidebar (Column 1) shall be hidden on screens narrower than 720px                                            |
 | UX-06 | The AI Chat Panel (Column 3) shall remain accessible on mobile, either as a full-width view or collapsible panel |
 
 ### 6.3 Security & Privacy
 
-| ID | Requirement |
-|---|---|
-| SEC-01 | The API key shall be stored in `localStorage` only — never transmitted to any backend other than the Anthropic API |
-| SEC-02 | The AI system prompt shall instruct the assistant not to retain or share candidate data or work content |
-| SEC-03 | No server-side storage of any user data, candidate data, or API keys |
+| ID     | Requirement                                                                                                                              |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| SEC-01 | The API key shall be stored in `localStorage` only — never transmitted to any backend other than the Anthropic API                       |
+| SEC-02 | The AI system prompt shall instruct the assistant not to retain or share candidate data or work content                                  |
+| SEC-03 | No server-side storage of any user data, candidate data, or API keys                                                                     |
 | SEC-04 | Business Context values stored in `localStorage` shall contain no candidate PII — they are intended for organizational/role context only |
 
 ### 6.4 Reliability
 
-| ID | Requirement |
-|---|---|
+| ID     | Requirement                                                                                                  |
+| ------ | ------------------------------------------------------------------------------------------------------------ |
 | REL-01 | API errors shall be caught and surfaced as user-readable messages (toast for tools, inline message for chat) |
-| REL-02 | All action buttons shall be re-enabled after an API call completes, regardless of success or failure |
+| REL-02 | All action buttons shall be re-enabled after an API call completes, regardless of success or failure         |
 
 ---
 
@@ -418,13 +422,13 @@ On first load (before the user customizes), each tool shall use the following bu
 
 ### 7.1 Technology Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Plain HTML5, CSS3, Vanilla JavaScript (no build step, no frameworks) |
-| AI Engine | Anthropic Claude API (`claude-sonnet-4-20250514`) |
-| API Transport | Browser `fetch()` with direct calls to `https://api.anthropic.com/v1/messages` |
-| Data Persistence | Browser `localStorage` (API key + per-tool Business Context) |
-| Fonts | Google Fonts: Fraunces (serif headings), Epilogue (body), DM Mono (monospace) |
+| Layer            | Technology                                                                        |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Frontend         | Plain HTML5, CSS3, Vanilla JavaScript (no build step, no frameworks)              |
+| AI Engine        | Anthropic Claude API (`claude-sonnet-4-20250514`)                                 |
+| API Transport    | Browser `fetch()` with direct calls to `https://api.anthropic.com/v1/messages`    |
+| Data Persistence | Browser `localStorage` (API key + per-tool Business Context)                      |
+| Fonts            | Google Fonts: Fraunces (serif headings), Epilogue (body), Roboto Mono (monospace) |
 
 ### 7.2 API Integration
 
@@ -461,15 +465,15 @@ Rendered Output in UI
 
 ### 7.4 localStorage Schema
 
-| Key | Type | Description |
-|---|---|---|
-| `ta_api_key` | `string` | Anthropic API key |
-| `ta_ctx_chat` | `string` | Business Context for AI Chat |
-| `ta_ctx_jd` | `string` | Business Context for JD Writer |
-| `ta_ctx_email` | `string` | Business Context for Email Writer |
-| `ta_ctx_eval` | `string` | Business Context for CV vs JD Evaluation |
-| `ta_ctx_summary` | `string` | Business Context for Candidate Summary |
-| `ta_ctx_salary` | `string` | Business Context for Salary Benchmark |
+| Key              | Type     | Description                              |
+| ---------------- | -------- | ---------------------------------------- |
+| `ta_api_key`     | `string` | Anthropic API key                        |
+| `ta_ctx_chat`    | `string` | Business Context for AI Chat             |
+| `ta_ctx_jd`      | `string` | Business Context for JD Writer           |
+| `ta_ctx_email`   | `string` | Business Context for Email Writer        |
+| `ta_ctx_eval`    | `string` | Business Context for CV vs JD Evaluation |
+| `ta_ctx_summary` | `string` | Business Context for Candidate Summary   |
+| `ta_ctx_salary`  | `string` | Business Context for Salary Benchmark    |
 
 ### 7.5 File Structure
 
@@ -496,32 +500,32 @@ The static portion is hardcoded and covers the base persona. The Business Contex
 
 ### 8.1 Key Behavioral Directives (Static System Prompt)
 
-| Directive | Detail |
-|---|---|
-| Language | Always respond in Vietnamese; use natural, semi-formal tone |
-| Persona | Knows Hue is TA Manager at Masan Group with 10+ years experience including VNG |
-| Domain | Tech hiring in the Vietnam market (HCM-centric) |
-| JD Style | Tech-savvy, engineer-friendly, not overly corporate |
-| Email Style | Semi-formal, personalized, authentic — not templated |
-| CV Evaluation | Objective, highlight strengths/gaps, provide fit score and interview questions |
-| Candidate Summary | Concise, bullet-point format for busy executives |
-| Salary Data | Based on Vietnam market 2024–2025 estimates; transparency about uncertainty |
-| Privacy | No external retention or sharing of candidate or company information |
+| Directive         | Detail                                                                         |
+| ----------------- | ------------------------------------------------------------------------------ |
+| Language          | Always respond in Vietnamese; use natural, semi-formal tone                    |
+| Persona           | Knows Hue is TA Manager at Masan Group with 10+ years experience including VNG |
+| Domain            | Tech hiring in the Vietnam market (HCM-centric)                                |
+| JD Style          | Tech-savvy, engineer-friendly, not overly corporate                            |
+| Email Style       | Semi-formal, personalized, authentic — not templated                           |
+| CV Evaluation     | Objective, highlight strengths/gaps, provide fit score and interview questions |
+| Candidate Summary | Concise, bullet-point format for busy executives                               |
+| Salary Data       | Based on Vietnam market 2024–2025 estimates; transparency about uncertainty    |
+| Privacy           | No external retention or sharing of candidate or company information           |
 
 ---
 
 ## 9. Tool Summary Reference
 
-| Tool | Icon | Key Inputs | Key Outputs | Business Context |
-|---|---|---|---|---|
-| AI Chat | 💬 | Free-form text | Conversational AI responses | ✓ Configurable |
-| CV Parser | 📄 | PDF/JPG/PNG files + field selection | Structured data cards + Excel row + CSV download | — |
-| Soạn JD | 📝 | Title, level, entity, skills, context | Full Job Description (Vietnamese) | ✓ Configurable |
-| Viết Email UV | 📧 | Email type, candidate name, position, language | Complete email with subject line | ✓ Configurable |
-| Đánh giá CV vs JD | 🔍 | JD text + CV text | Fit score, strengths, gaps, interview questions, recommendation | ✓ Configurable |
-| Tóm tắt Candidate | 📋 | Candidate info + interview results | Executive-friendly candidate brief | ✓ Configurable |
-| Salary Benchmark | 💰 | Position, level, location, experience, skills | Salary ranges, market comparison, trends, benefits | ✓ Configurable |
-| **Settings** | ⚙️ | API key + Business Context per tool | Persisted configuration in localStorage | — |
+| Tool              | Icon | Key Inputs                                     | Key Outputs                                                     | Business Context |
+| ----------------- | ---- | ---------------------------------------------- | --------------------------------------------------------------- | ---------------- |
+| AI Chat           | 💬   | Free-form text                                 | Conversational AI responses                                     | ✓ Configurable   |
+| CV Parser         | 📄   | PDF/JPG/PNG files + field selection            | Structured data cards + Excel row + CSV download                | —                |
+| Soạn JD           | 📝   | Title, level, entity, skills, context          | Full Job Description (Vietnamese)                               | ✓ Configurable   |
+| Viết Email UV     | 📧   | Email type, candidate name, position, language | Complete email with subject line                                | ✓ Configurable   |
+| Đánh giá CV vs JD | 🔍   | JD text + CV text                              | Fit score, strengths, gaps, interview questions, recommendation | ✓ Configurable   |
+| Tóm tắt Candidate | 📋   | Candidate info + interview results             | Executive-friendly candidate brief                              | ✓ Configurable   |
+| Salary Benchmark  | 💰   | Position, level, location, experience, skills  | Salary ranges, market comparison, trends, benefits              | ✓ Configurable   |
+| **Settings**      | ⚙️   | API key + Business Context per tool            | Persisted configuration in localStorage                         | —                |
 
 > **Note:** CV Parser does not use a Business Context because its output is structured JSON data extraction — tone and organizational context are not applicable.
 
@@ -549,30 +553,30 @@ The static portion is hardcoded and covers the base persona. The Business Contex
 
 ## 11. Glossary
 
-| Term | Definition |
-|---|---|
-| TA | Talent Acquisition — the function responsible for recruiting and hiring |
-| JD | Job Description — a formal document describing a role's responsibilities and requirements |
-| CV | Curriculum Vitae / Resume — a candidate's document summarizing their professional background |
-| HM | Hiring Manager — the person who owns the headcount and makes the final hiring decision |
-| PV | Phỏng vấn — Interview (Vietnamese) |
-| UV | Ứng viên — Candidate (Vietnamese) |
-| BU | Business Unit |
-| Gross | Gross salary — before tax deductions |
-| Pipeline | The pool of candidates at various stages of the recruitment funnel |
-| On Hold | A candidate who has been assessed but whose process is paused temporarily |
-| Base64 | Binary-to-text encoding used to transmit file data in JSON API requests |
+| Term     | Definition                                                                                   |
+| -------- | -------------------------------------------------------------------------------------------- |
+| TA       | Talent Acquisition — the function responsible for recruiting and hiring                      |
+| JD       | Job Description — a formal document describing a role's responsibilities and requirements    |
+| CV       | Curriculum Vitae / Resume — a candidate's document summarizing their professional background |
+| HM       | Hiring Manager — the person who owns the headcount and makes the final hiring decision       |
+| PV       | Phỏng vấn — Interview (Vietnamese)                                                           |
+| UV       | Ứng viên — Candidate (Vietnamese)                                                            |
+| BU       | Business Unit                                                                                |
+| Gross    | Gross salary — before tax deductions                                                         |
+| Pipeline | The pool of candidates at various stages of the recruitment funnel                           |
+| On Hold  | A candidate who has been assessed but whose process is paused temporarily                    |
+| Base64   | Binary-to-text encoding used to transmit file data in JSON API requests                      |
 
 ---
 
 ## 12. Change Log
 
-| Version | Date | Change Summary |
-|---|---|---|
-| 1.0 | March 2026 | Initial as-built BRD based on `ta-assistant.html` |
-| 1.1 | March 2026 | Added Settings feature: API key management panel + per-tool Business Context configuration with localStorage persistence |
-| 1.2 | March 2026 | Added §4 UI Layout & Information Architecture — full 3-column layout specification (Sidebar, Content Area, AI Chat Panel); updated Functional Requirements and Non-Functional Requirements to reference column structure |
+| Version | Date       | Change Summary                                                                                                                                                                                                           |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.0     | March 2026 | Initial as-built BRD based on `ta-assistant.html`                                                                                                                                                                        |
+| 1.1     | March 2026 | Added Settings feature: API key management panel + per-tool Business Context configuration with localStorage persistence                                                                                                 |
+| 1.2     | March 2026 | Added §4 UI Layout & Information Architecture — full 3-column layout specification (Sidebar, Content Area, AI Chat Panel); updated Functional Requirements and Non-Functional Requirements to reference column structure |
 
 ---
 
-*This document reflects the intended design including the Settings feature (v1.1). Implementation should be validated against this BRD.*
+_This document reflects the intended design including the Settings feature (v1.1). Implementation should be validated against this BRD._

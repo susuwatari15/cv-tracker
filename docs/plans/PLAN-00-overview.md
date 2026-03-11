@@ -10,21 +10,21 @@
 
 Execute plans **in order**. Each plan depends on the previous one.
 
-| # | Plan File | What It Covers | MVP Critical |
-|---|-----------|---------------|:---:|
-| 01 | `PLAN-01-project-setup.md` | Init Next.js 15, install all deps, configure TS/Tailwind/shadcn | ✅ |
-| 02 | `PLAN-02-layout-shell.md` | 3-column shell layout, Sidebar, routing logic | ✅ |
-| 03 | `PLAN-03-state-stores.md` | Zustand stores: API key, active tool, chat history, settings | ✅ |
-| 04 | `PLAN-04-api-route.md` | Next.js Route Handler proxying Anthropic API | ✅ |
-| 05 | `PLAN-05-shared-components.md` | OutputBox, Toast, ToolHeader, RunButton, form field primitives | ✅ |
-| 06 | `PLAN-06-settings.md` | Settings panel: API key + Business Context per tool | ✅ |
-| 07 | `PLAN-07-chat-panel.md` | AI Chat — Column 3 permanent panel | ✅ |
-| 08 | `PLAN-08-cv-parser.md` | CV Parser tool | ✅ |
-| 09 | `PLAN-09-jd-writer.md` | JD Writer tool | ✅ |
-| 10 | `PLAN-10-email-writer.md` | Email Writer tool | ✅ |
-| 11 | `PLAN-11-cv-eval.md` | CV vs JD Evaluation tool | ✅ |
-| 12 | `PLAN-12-candidate-summary.md` | Candidate Summary tool | ✅ |
-| 13 | `PLAN-13-salary-benchmark.md` | Salary Benchmark tool | ✅ |
+| #   | Plan File                      | What It Covers                                                  | MVP Critical |
+| --- | ------------------------------ | --------------------------------------------------------------- | :----------: |
+| 01  | `PLAN-01-project-setup.md`     | Init Next.js 15, install all deps, configure TS/Tailwind/shadcn |      ✅      |
+| 02  | `PLAN-02-layout-shell.md`      | 3-column shell layout, Sidebar, routing logic                   |      ✅      |
+| 03  | `PLAN-03-state-stores.md`      | Zustand stores: API key, active tool, chat history, settings    |      ✅      |
+| 04  | `PLAN-04-api-route.md`         | Next.js Route Handler proxying Anthropic API                    |      ✅      |
+| 05  | `PLAN-05-shared-components.md` | OutputBox, Toast, ToolHeader, RunButton, form field primitives  |      ✅      |
+| 06  | `PLAN-06-settings.md`          | Settings panel: API key + Business Context per tool             |      ✅      |
+| 07  | `PLAN-07-chat-panel.md`        | AI Chat — Column 3 permanent panel                              |      ✅      |
+| 08  | `PLAN-08-cv-parser.md`         | CV Parser tool                                                  |      ✅      |
+| 09  | `PLAN-09-jd-writer.md`         | JD Writer tool                                                  |      ✅      |
+| 10  | `PLAN-10-email-writer.md`      | Email Writer tool                                               |      ✅      |
+| 11  | `PLAN-11-cv-eval.md`           | CV vs JD Evaluation tool                                        |      ✅      |
+| 12  | `PLAN-12-candidate-summary.md` | Candidate Summary tool                                          |      ✅      |
+| 13  | `PLAN-13-salary-benchmark.md`  | Salary Benchmark tool                                           |      ✅      |
 
 ---
 
@@ -117,37 +117,37 @@ src/
 
 The app uses **shadcn `@ss-themes/modern-minimal`** for base UI. TA Assistant–specific tokens are added in `tailwind.config.ts`:
 
-| CSS Var (HTML) | Hex | Tailwind Key |
-|----------------|-----|--------------|
-| `--bg` | `#f7f4ef` | `bg-canvas` |
-| `--bg2` | `#eee9e0` | `bg-canvas-2` |
-| `--surface` | `#ffffff` | `bg-surface` |
-| `--border` | `#e0d8cc` | `border-default` |
-| `--border2` | `#cec4b4` | `border-strong` |
-| `--ink` | `#1a1714` | `text-ink` |
-| `--ink2` | `#6b6458` | `text-ink-2` |
-| `--ink3` | `#a09890` | `text-ink-3` |
-| `--accent` | `#c4673a` | `accent` |
-| `--accent2` | `#2d6a4f` | `accent-2` |
-| `--accent3` | `#4a6fa5` | `accent-3` |
-| `--amber` | `#d4a017` | `amber` |
+| CSS Var (HTML) | Hex       | Tailwind Key     |
+| -------------- | --------- | ---------------- |
+| `--bg`         | `#f7f4ef` | `bg-canvas`      |
+| `--bg2`        | `#eee9e0` | `bg-canvas-2`    |
+| `--surface`    | `#ffffff` | `bg-surface`     |
+| `--border`     | `#e0d8cc` | `border-default` |
+| `--border2`    | `#cec4b4` | `border-strong`  |
+| `--ink`        | `#1a1714` | `text-ink`       |
+| `--ink2`       | `#6b6458` | `text-ink-2`     |
+| `--ink3`       | `#a09890` | `text-ink-3`     |
+| `--accent`     | `#c4673a` | `accent`         |
+| `--accent2`    | `#2d6a4f` | `accent-2`       |
+| `--accent3`    | `#4a6fa5` | `accent-3`       |
+| `--amber`      | `#d4a017` | `amber`          |
 
 **Theme:** `pnpm dlx shadcn@latest add @ss-themes/modern-minimal` — see PLAN-01 Step 5 for full CSS variables.  
-**Fonts:** `Fraunces` (serif headings), `Epilogue` (body), `DM Mono` (mono) — loaded via `next/font/google`. Override `--font-sans`, `--font-serif`, `--font-mono` in `:root` if using these instead of Geist/JetBrains.
+**Fonts:** `Montserrat` (serif headings), `Montserrat` (body), `Roboto Mono` (mono) — loaded via `next/font/google`. Override `--font-sans`, `--font-serif`, `--font-mono` in `:root` if using these instead of Geist/JetBrains.
 
 ---
 
 ## localStorage Keys (unchanged from HTML)
 
-| Key | Purpose |
-|-----|---------|
-| `ta_api_key` | Anthropic API key |
-| `ta_ctx_chat` | Business Context for AI Chat |
-| `ta_ctx_jd` | Business Context for JD Writer |
-| `ta_ctx_email` | Business Context for Email Writer |
-| `ta_ctx_eval` | Business Context for CV Eval |
+| Key              | Purpose                                |
+| ---------------- | -------------------------------------- |
+| `ta_api_key`     | Anthropic API key                      |
+| `ta_ctx_chat`    | Business Context for AI Chat           |
+| `ta_ctx_jd`      | Business Context for JD Writer         |
+| `ta_ctx_email`   | Business Context for Email Writer      |
+| `ta_ctx_eval`    | Business Context for CV Eval           |
 | `ta_ctx_summary` | Business Context for Candidate Summary |
-| `ta_ctx_salary` | Business Context for Salary Benchmark |
+| `ta_ctx_salary`  | Business Context for Salary Benchmark  |
 
 ---
 
