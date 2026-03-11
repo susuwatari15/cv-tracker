@@ -103,7 +103,7 @@ const epilogue = Epilogue({
 
 const dmMono = DM_Mono({
   subsets: ["latin"],
-  variable: "--font-dm-mono",
+  variable: "--font-mono",
   display: "swap",
   weight: ["300", "400", "500"],
 });

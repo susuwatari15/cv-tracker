@@ -7,8 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-montserrat), serif;
+  --font-mono: var(--font-montserrat), monospace;
+  --font-montserrat: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -45,6 +47,21 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* TA Assistant custom tokens */
+  --color-canvas: #f7f4ef;
+  --color-canvas-2: #eee9e0;
+  --color-surface: #ffffff;
+  --color-border-default: #e0d8cc;
+  --color-border-strong: #cec4b4;
+  --color-ink: #1a1714;
+  --color-ink-2: #6b6458;
+  --color-ink-3: #a09890;
+  --color-ta-accent: #c4673a;
+  --color-ta-accent-hover: #b55a30;
+  --color-ta-accent-2: #2d6a4f;
+  --color-ta-accent-3: #4a6fa5;
+  --color-ta-amber: #d4a017;
 }
 
 :root {
@@ -122,8 +139,64 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* TA Assistant animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.35s ease;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-blink {
+  animation: blink 1.2s infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cec4b4;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a09890;
+}
+
+/* Font utility classes */
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+.font-montserrat {
+  font-family: var(--font-montserrat), sans-serif;
 }
