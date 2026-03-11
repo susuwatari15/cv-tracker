@@ -27,27 +27,34 @@ Sidebar hidden at ≤720px.
 Root layout — applies fonts, metadata, and wraps with Toaster provider.
 
 ```tsx
-import type { Metadata } from 'next'
-import { Fraunces, Epilogue, DM_Mono } from 'next/font/google'
-import { Toaster } from '@/components/ui/sonner'
-import './globals.css'
+import type { Metadata } from "next";
+import { Fraunces, Epilogue, DM_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
+import "./globals.css";
 
 // font declarations (see PLAN-01)
 
 export const metadata: Metadata = {
   title: "Hue's TA Assistant",
-  description: 'AI-Powered Talent Acquisition Toolkit — Masan Group',
-}
+  description: "AI-Powered Talent Acquisition Toolkit — Masan Group",
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="vi" className={`${fraunces.variable} ${epilogue.variable} ${dmMono.variable}`}>
+    <html
+      lang="vi"
+      className={`${fraunces.variable} ${epilogue.variable} ${dmMono.variable}`}
+    >
       <body>
         {children}
         <Toaster position="bottom-right" />
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -58,10 +65,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 Simply renders the `AppShell` (client component boundary):
 
 ```tsx
-import AppShell from '@/components/shared/AppShell'
+import AppShell from "@/components/shared/AppShell";
 
 export default function Home() {
-  return <AppShell />
+  return <AppShell />;
 }
 ```
 
@@ -72,11 +79,11 @@ export default function Home() {
 **Client component.** Top-level layout container. Renders 3 columns.
 
 ```tsx
-'use client'
+"use client";
 
-import Sidebar from './Sidebar'
-import ContentArea from './ContentArea'
-import AIChatPanel from './AIChatPanel'
+import Sidebar from "./Sidebar";
+import ContentArea from "./ContentArea";
+import AIChatPanel from "./AIChatPanel";
 
 export default function AppShell() {
   return (
@@ -85,7 +92,7 @@ export default function AppShell() {
       <ContentArea />
       <AIChatPanel />
     </div>
-  )
+  );
 }
 ```
 
@@ -96,6 +103,7 @@ export default function AppShell() {
 **Client component.**
 
 Structure (top to bottom):
+
 1. Brand header (logo icon `✦`, "TA Assistant", subtitle)
 2. API key input row with status dot
 3. Navigation items grouped by section
@@ -104,39 +112,38 @@ Structure (top to bottom):
 Props: none (reads from Zustand stores)
 
 Key behaviors:
+
 - Active tool highlighted with accent background/border (from `toolStore`)
 - Clicking nav item calls `toolStore.setActiveTool(id)`
 - API key input reads/writes `apiKeyStore`
 - Hidden on mobile: `className="hidden md:flex"` (breakpoint at 720px → use `min-[720px]:flex`)
 
 ```tsx
-'use client'
+"use client";
 
 const TOOL_GROUPS = [
   {
-    label: 'Công cụ chính',
+    label: "Công cụ chính",
     tools: [
-      { id: 'chat', icon: '💬', label: 'Trợ lý AI' },
-      { id: 'cv-parser', icon: '📄', label: 'CV Parser' },
-      { id: 'jd-writer', icon: '📝', label: 'Soạn JD' },
-      { id: 'email-writer', icon: '📧', label: 'Viết Email UV' },
-      { id: 'cv-eval', icon: '🔍', label: 'Đánh giá CV vs JD' },
+      { id: "chat", icon: "💬", label: "Trợ lý AI" },
+      { id: "cv-parser", icon: "📄", label: "CV Parser" },
+      { id: "jd-writer", icon: "📝", label: "Soạn JD" },
+      { id: "email-writer", icon: "📧", label: "Viết Email UV" },
+      { id: "cv-eval", icon: "🔍", label: "Đánh giá CV vs JD" },
     ],
   },
   {
-    label: 'Nội dung',
+    label: "Nội dung",
     tools: [
-      { id: 'candidate-summary', icon: '📋', label: 'Tóm tắt Candidate' },
-      { id: 'salary-benchmark', icon: '💰', label: 'Salary Benchmark' },
+      { id: "candidate-summary", icon: "📋", label: "Tóm tắt Candidate" },
+      { id: "salary-benchmark", icon: "💰", label: "Salary Benchmark" },
     ],
   },
   {
-    label: 'Cài đặt',
-    tools: [
-      { id: 'settings', icon: '⚙️', label: 'Settings' },
-    ],
+    label: "Cài đặt",
+    tools: [{ id: "settings", icon: "⚙️", label: "Settings" }],
   },
-]
+];
 ```
 
 Sidebar width: `w-[280px] min-w-[280px] shrink-0`  
@@ -151,26 +158,27 @@ Background: `bg-ink` (the near-black `#1a1714`)
 Reads `activeTool` from `toolStore` and renders the correct tool container.
 
 Structure:
+
 1. `ToolHeader` (fixed at top — not scrolling)
 2. Scrollable tool body area
 
 ```tsx
-'use client'
+"use client";
 
-import { useToolStore } from '@/stores/toolStore'
-import ToolHeader from './ToolHeader'
-import CvParserContainer from '@/features/cv-parser/containers/CvParserContainer'
+import { useToolStore } from "@/stores/toolStore";
+import ToolHeader from "./ToolHeader";
+import CvParserContainer from "@/features/cv-parser/containers/CvParserContainer";
 // ... other containers
 
 const TOOL_MAP = {
-  'cv-parser': <CvParserContainer />,
-  'jd-writer': <JdWriterContainer />,
+  "cv-parser": <CvParserContainer />,
+  "jd-writer": <JdWriterContainer />,
   // etc.
-  'settings': <SettingsContainer />,
-}
+  settings: <SettingsContainer />,
+};
 
 export default function ContentArea() {
-  const activeTool = useToolStore(s => s.activeTool)
+  const activeTool = useToolStore((s) => s.activeTool);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-canvas">
@@ -179,7 +187,7 @@ export default function ContentArea() {
         {TOOL_MAP[activeTool] ?? null}
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -190,19 +198,19 @@ If `activeTool === 'chat'`, ContentArea can show a placeholder or the chat-relat
 
 ### `src/components/shared/AIChatPanel.tsx`
 
-**Client component.** Always visible. Fixed 360px width.
+**Client component.** Always visible. Fixed 400px width.
 
 ```tsx
-'use client'
+"use client";
 
-import ChatContainer from '@/features/chat/containers/ChatContainer'
+import ChatContainer from "@/features/chat/containers/ChatContainer";
 
 export default function AIChatPanel() {
   return (
-    <div className="w-[360px] min-w-[360px] shrink-0 flex flex-col border-l border-border-default bg-surface overflow-hidden">
+    <div className="w-[400px] min-w-[400px] shrink-0 flex flex-col border-l border-border-default bg-surface overflow-hidden">
       <ChatContainer />
     </div>
-  )
+  );
 }
 ```
 
@@ -213,20 +221,44 @@ export default function AIChatPanel() {
 Displays the active tool's title, description, and Claude model badge.
 
 ```tsx
-'use client'
+"use client";
 
-import { useToolStore } from '@/stores/toolStore'
+import { useToolStore } from "@/stores/toolStore";
 
 const TOOL_META = {
-  'cv-parser': { title: 'CV Parser', desc: 'Upload PDF/ảnh CV → AI extract thông tin → copy vào Excel' },
-  'jd-writer': { title: 'Soạn JD', desc: 'Tạo Job Description chuẩn cho tech roles' },
-  'email-writer': { title: 'Viết Email Ứng Viên', desc: 'Mời PV, reject, offer — bán tự động, cá nhân hóa' },
-  'cv-eval': { title: 'Đánh giá CV vs JD', desc: 'Phân tích mức độ phù hợp của ứng viên với vị trí' },
-  'candidate-summary': { title: 'Tóm tắt Candidate', desc: 'Tóm tắt profile cho hiring manager' },
-  'salary-benchmark': { title: 'Salary Benchmark', desc: 'Tư vấn mức lương thị trường tech VN 2024-2025' },
-  settings: { title: 'Settings', desc: 'Cấu hình API key và Business Context cho từng công cụ' },
-  chat: { title: 'Trợ lý AI', desc: 'Chat tự do — hỏi bất cứ điều gì liên quan đến công việc TA' },
-}
+  "cv-parser": {
+    title: "CV Parser",
+    desc: "Upload PDF/ảnh CV → AI extract thông tin → copy vào Excel",
+  },
+  "jd-writer": {
+    title: "Soạn JD",
+    desc: "Tạo Job Description chuẩn cho tech roles",
+  },
+  "email-writer": {
+    title: "Viết Email Ứng Viên",
+    desc: "Mời PV, reject, offer — bán tự động, cá nhân hóa",
+  },
+  "cv-eval": {
+    title: "Đánh giá CV vs JD",
+    desc: "Phân tích mức độ phù hợp của ứng viên với vị trí",
+  },
+  "candidate-summary": {
+    title: "Tóm tắt Candidate",
+    desc: "Tóm tắt profile cho hiring manager",
+  },
+  "salary-benchmark": {
+    title: "Salary Benchmark",
+    desc: "Tư vấn mức lương thị trường tech VN 2024-2025",
+  },
+  settings: {
+    title: "Settings",
+    desc: "Cấu hình API key và Business Context cho từng công cụ",
+  },
+  chat: {
+    title: "Trợ lý AI",
+    desc: "Chat tự do — hỏi bất cứ điều gì liên quan đến công việc TA",
+  },
+};
 ```
 
 Layout: `flex items-center justify-between px-8 py-5 border-b border-border-default bg-surface shrink-0`
@@ -235,10 +267,10 @@ Layout: `flex items-center justify-between px-8 py-5 border-b border-border-defa
 
 ## Responsive Behavior
 
-| Breakpoint | Sidebar | Content | Chat Panel |
-|-----------|---------|---------|------------|
-| `>720px` | Visible (280px) | flex:1 | Visible (360px) |
-| `≤720px` | Hidden | Full width | Full width below content |
+| Breakpoint | Sidebar         | Content    | Chat Panel               |
+| ---------- | --------------- | ---------- | ------------------------ |
+| `>720px`   | Visible (280px) | flex:1     | Visible (360px)          |
+| `≤720px`   | Hidden          | Full width | Full width below content |
 
 Use Tailwind's `min-[720px]:flex hidden` on Sidebar.
 

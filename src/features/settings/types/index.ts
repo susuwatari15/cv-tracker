@@ -20,7 +20,7 @@ export const BUSINESS_CONTEXT_FIELDS: BusinessContextField[] = [
   {
     key: "ta_ctx_email",
     label: "Viết Email UV",
-    placeholder: "VD: Sender: Hue Nguyen, TA Manager, Masan Group...",
+    placeholder: "VD: Sender: Hue Nguyen, TA Manager...",
   },
   {
     key: "ta_ctx_eval",
