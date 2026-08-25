@@ -1,17 +1,34 @@
+import { cn } from "@/lib/utils";
+
 interface ApiStatusDotProps {
-  status: "empty" | "valid" | "invalid";
+	status: "empty" | "valid" | "invalid";
+	/** Render on the dark navigation rail instead of a light surface. */
+	onDark?: boolean;
 }
 
-const colorMap = {
-  empty: "bg-white/20",
-  valid: "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]",
-  invalid: "bg-red-400",
+const LABELS: Record<ApiStatusDotProps["status"], string> = {
+	empty: "Chưa cấu hình API key",
+	valid: "API key hợp lệ",
+	invalid: "API key không đúng định dạng",
 };
 
-export default function ApiStatusDot({ status }: ApiStatusDotProps) {
-  return (
-    <div
-      className={`w-[7px] h-[7px] rounded-full shrink-0 transition-all ${colorMap[status]}`}
-    />
-  );
+/**
+ * The dot is decorative: it carries a text label for screen readers and is
+ * always accompanied by visible copy, so the state is never colour-only.
+ */
+export default function ApiStatusDot({ status, onDark }: ApiStatusDotProps) {
+	return (
+		<span
+			role="img"
+			aria-label={LABELS[status]}
+			title={LABELS[status]}
+			className={cn(
+				"size-2 shrink-0 rounded-full ring-2 transition-colors",
+				onDark ? "ring-white/10" : "ring-canvas-2",
+				status === "valid" && "bg-success",
+				status === "invalid" && "bg-danger",
+				status === "empty" && (onDark ? "bg-white/25" : "bg-ink-4"),
+			)}
+		/>
+	);
 }

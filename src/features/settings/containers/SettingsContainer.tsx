@@ -1,15 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useForm, type UseFormRegister } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useApiKeyStore } from "@/stores/apiKeyStore";
-import { useSettingsStore, type ContextKey } from "@/stores/settingsStore";
 import { toast } from "sonner";
-import FormSection from "@/components/shared/FormSection";
-import ApiKeyField from "../components/ApiKeyField";
-import BusinessContextForm from "../components/BusinessContextForm";
-import { BUSINESS_CONTEXT_FIELDS } from "../types";
+import { Building2, KeyRound } from "lucide-react";
+import { useSettingsStore, type ContextKey } from "@/stores/settingsStore";
+import SettingsNav, { type SettingsNavItem } from "../components/SettingsNav";
+import ConnectionPane from "../components/ConnectionPane";
+import ContextPane from "../components/ContextPane";
+import type { SettingsSectionId } from "../types";
 
 const schema = z.object({
 	ta_ctx_chat: z.string(),
@@ -23,52 +24,66 @@ const schema = z.object({
 type SettingsFormValues = z.infer<typeof schema>;
 
 export default function SettingsContainer() {
-	const { key, status, setKey } = useApiKeyStore();
 	const { contexts, setContext, saveAll } = useSettingsStore();
+	const [section, setSection] = useState<SettingsSectionId>("connection");
 
+	// The form lives here, not in ContextPane: switching panels unmounts the
+	// panel, and edits in progress must survive that.
 	const form = useForm<SettingsFormValues>({
 		resolver: zodResolver(schema),
 		defaultValues: contexts as SettingsFormValues,
 	});
+
+	const isDirty = form.formState.isDirty;
 
 	const onSubmit = (data: SettingsFormValues) => {
 		for (const [k, v] of Object.entries(data)) {
 			setContext(k as ContextKey, v as string);
 		}
 		saveAll();
-		toast.success("✓ Settings đã được lưu!");
+		form.reset(data); // clears the dirty flag so the save state is honest
+		toast.success("Đã lưu cấu hình");
 	};
 
-	return (
-		<div className="max-w-2xl">
-			<FormSection title="API Configuration" icon="🔑">
-				<ApiKeyField value={key} status={status} onChange={setKey} />
-				<p className="text-xs font-mono text-ink-3 mt-2">
-					Key được lưu trong localStorage. Không bao giờ gửi đến server của
-					chúng tôi.
-				</p>
-			</FormSection>
+	const items: SettingsNavItem[] = [
+		{
+			id: "connection",
+			label: "Kết nối AI",
+			description: "Nhà cung cấp, API key, model",
+			icon: KeyRound,
+		},
+		{
+			id: "context",
+			label: "Business context",
+			description: "Prompt riêng từng công cụ",
+			icon: Building2,
+			// Surfaced on the nav so unsaved edits stay visible from the other panel.
+			dirty: isDirty,
+		},
+	];
 
-			<FormSection title="Business Context per Tool" icon="📋">
-				<p className="text-[12px] text-ink-2 mb-4">
-					Context này được thêm vào system prompt của từng công cụ. Giữ ngắn gọn
-					(dưới 300 từ mỗi tool).
-				</p>
-				<form onSubmit={form.handleSubmit(onSubmit)}>
-					<BusinessContextForm
+	return (
+		<div className="mx-auto grid max-w-[1040px] gap-4 md:grid-cols-[236px_minmax(0,1fr)] md:gap-6">
+			<SettingsNav items={items} active={section} onChange={setSection} />
+
+			<div
+				role="tabpanel"
+				id={`settings-panel-${section}`}
+				aria-labelledby={`settings-tab-${section}`}
+				className="min-w-0"
+			>
+				{section === "connection" ? (
+					<ConnectionPane />
+				) : (
+					<ContextPane
 						register={
 							form.register as UseFormRegister<Record<ContextKey, string>>
 						}
-						fields={BUSINESS_CONTEXT_FIELDS}
+						isDirty={isDirty}
+						onSubmit={form.handleSubmit(onSubmit)}
 					/>
-					<button
-						type="submit"
-						className="mt-5 w-full flex items-center justify-center gap-2 px-7 py-[13px] bg-ta-accent hover:bg-ta-accent-hover text-white font-semibold text-sm rounded-[8px] transition-all"
-					>
-						💾 Lưu Settings
-					</button>
-				</form>
-			</FormSection>
+				)}
+			</div>
 		</div>
 	);
 }

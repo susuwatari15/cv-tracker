@@ -1,67 +1,47 @@
 "use client";
 
-import * as XLSX from "xlsx";
-
 import { useState } from "react";
-import { useApiKeyStore } from "@/stores/apiKeyStore";
-import { useClaudeApi } from "@/hooks/useClaudeApi";
+import * as XLSX from "xlsx";
 import { toast } from "sonner";
+import {
+	Download,
+	FileSpreadsheet,
+	ScanText,
+	SlidersHorizontal,
+	Trash2,
+	Users,
+} from "lucide-react";
+import { useProviderStore } from "@/stores/providerStore";
+import { useCvFieldsStore } from "@/stores/cvFieldsStore";
+import { useClaudeApi } from "@/hooks/useClaudeApi";
 import FormSection from "@/components/shared/FormSection";
 import RunButton from "@/components/shared/RunButton";
 import CopyButton from "@/components/shared/CopyButton";
+import GhostButton from "@/components/shared/GhostButton";
+import EmptyState from "@/components/shared/EmptyState";
+import { Skeleton } from "@/components/shared/Skeleton";
 import UploadZone from "../components/UploadZone";
 import FieldChips from "../components/FieldChips";
 import ParsedResultCard from "../components/ParsedResultCard";
-import { CV_FIELDS, type CvField, type ParsedCv } from "../types";
-
-const LS_FIELDS_KEY = "cv_parser_fields";
-
-function loadFields(): CvField[] {
-	try {
-		const raw = localStorage.getItem(LS_FIELDS_KEY);
-		if (raw) return JSON.parse(raw) as CvField[];
-	} catch {}
-	return CV_FIELDS;
-}
+import type { ParsedCv } from "../types";
 
 export default function CvParserContainer() {
 	const [files, setFiles] = useState<File[]>([]);
-	const [fields, setFields] = useState<CvField[]>(loadFields);
-	const [selectedFields, setSelectedFields] = useState<Set<string>>(
-		() => new Set(loadFields().map((f) => f.key)),
-	);
 	const [results, setResults] = useState<ParsedCv[]>([]);
-	const [showOutput, setShowOutput] = useState(false);
-	const [parseProgress, setParseProgress] = useState("");
+	const [parsedNames, setParsedNames] = useState<string[]>([]);
+	const [progress, setProgress] = useState<{ done: number; total: number } | null>(
+		null,
+	);
 
-	const { status } = useApiKeyStore();
+	const status = useProviderStore((s) => s.status);
 	const { isLoading, call } = useClaudeApi();
 
-	const toggleField = (key: string) => {
-		setSelectedFields((prev) => {
-			const next = new Set(prev);
-			next.has(key) ? next.delete(key) : next.add(key);
-			return next;
-		});
-	};
-
-	const addField = (field: CvField) => {
-		const next = [...fields, field];
-		setFields(next);
-		localStorage.setItem(LS_FIELDS_KEY, JSON.stringify(next));
-		setSelectedFields((prev) => new Set([...prev, field.key]));
-	};
-
-	const removeField = (key: string) => {
-		const next = fields.filter((f) => f.key !== key);
-		setFields(next);
-		localStorage.setItem(LS_FIELDS_KEY, JSON.stringify(next));
-		setSelectedFields((prev) => {
-			const s = new Set(prev);
-			s.delete(key);
-			return s;
-		});
-	};
+	// Extraction schema is persisted in a store hydrated at startup.
+	const fields = useCvFieldsStore((s) => s.fields);
+	const selectedFields = useCvFieldsStore((s) => s.selected);
+	const toggleField = useCvFieldsStore((s) => s.toggle);
+	const addField = useCvFieldsStore((s) => s.addField);
+	const removeField = useCvFieldsStore((s) => s.removeField);
 
 	const fileToBase64 = (file: File): Promise<string> =>
 		new Promise((resolve, reject) => {
@@ -79,20 +59,25 @@ export default function CvParserContainer() {
 
 	const handleParse = async () => {
 		if (!files.length) {
-			toast.error("Vui lòng upload CV trước!");
+			toast.error("Chưa có tệp CV nào để bóc tách");
 			return;
 		}
+		if (!selectedFields.size) {
+			toast.error("Chọn ít nhất một trường cần trích xuất");
+			return;
+		}
+
 		const fieldKeys = Array.from(selectedFields);
 		const parsed: ParsedCv[] = [];
+		const names: string[] = [];
+		let failed = 0;
 
 		for (let i = 0; i < files.length; i++) {
-			setParseProgress(`Parsing ${i + 1}/${files.length}...`);
+			setProgress({ done: i, total: files.length });
 			const b64 = await fileToBase64(files[i]);
 			const mt = getMediaType(files[i]);
 			const fieldList = fieldKeys
-				.map(
-					(k) => `- "${k}": ${fields.find((f) => f.key === k)?.label ?? k}`,
-				)
+				.map((k) => `- "${k}": ${fields.find((f) => f.key === k)?.label ?? k}`)
 				.join("\n");
 
 			const prompt = `Bạn là CV parser chuyên nghiệp. Extract thông tin sau từ CV này và trả về JSON thuần (không markdown):\n${fieldList}\nQuy tắc: Nếu không tìm thấy → null. "skills" là array. "years_exp" là số. "summary" là 1-2 câu tiếng Việt.`;
@@ -118,24 +103,36 @@ export default function CvParserContainer() {
 				maxTokens: 1000,
 			});
 
-			if (result) {
-				try {
-					const json = JSON.parse(result.replace(/```json|```/g, "").trim());
-					parsed.push(json);
-				} catch {
-					toast.error(`Lỗi parse JSON cho file ${files[i].name}`);
-				}
+			if (!result) {
+				failed++;
+				continue;
+			}
+
+			try {
+				parsed.push(JSON.parse(result.replace(/```json|```/g, "").trim()));
+				names.push(files[i].name);
+			} catch {
+				failed++;
+				toast.error(`Không đọc được kết quả cho ${files[i].name}`);
 			}
 		}
 
-		setParseProgress("");
+		setProgress(null);
 		setResults(parsed);
-		setShowOutput(true);
-		toast.success(`✓ Parse xong ${parsed.length} CV!`);
+		setParsedNames(names);
+
+		if (parsed.length) {
+			toast.success(
+				failed
+					? `Bóc tách ${parsed.length} CV, ${failed} tệp lỗi`
+					: `Đã bóc tách ${parsed.length} CV`,
+			);
+		}
 	};
 
+	const fieldKeys = Array.from(selectedFields);
+
 	const getTabSeparatedRow = (): string => {
-		const fieldKeys = Array.from(selectedFields);
 		const header = fieldKeys
 			.map((k) => fields.find((f) => f.key === k)?.label ?? k)
 			.join("\t");
@@ -150,24 +147,21 @@ export default function CvParserContainer() {
 		return [header, ...rows].join("\n");
 	};
 
-	const handleDownload = () => {
+	const handleDownloadCsv = () => {
 		const csv = getTabSeparatedRow().replace(/\t/g, ",");
-		const blob = new Blob(["\uFEFF" + csv], {
-			type: "text/csv;charset=utf-8",
-		});
+		const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
 		const a = document.createElement("a");
 		a.href = URL.createObjectURL(blob);
 		a.download = `cv_parsed_${Date.now()}.csv`;
 		a.click();
-		toast.success("✓ Downloaded!");
+		URL.revokeObjectURL(a.href);
+		toast.success("Đã tải CSV");
 	};
 
 	const handleDownloadExcel = () => {
-		const fieldKeys = Array.from(selectedFields);
 		const headers = fieldKeys.map(
 			(k) => fields.find((f) => f.key === k)?.label ?? k,
 		);
-
 		const rows = results.map((r) =>
 			Object.fromEntries(
 				fieldKeys.map((k, i) => {
@@ -176,21 +170,33 @@ export default function CvParserContainer() {
 				}),
 			),
 		);
-
 		const worksheet = XLSX.utils.json_to_sheet(rows, { header: headers });
 		const workbook = XLSX.utils.book_new();
 		XLSX.utils.book_append_sheet(workbook, worksheet, "CV Parsed");
 		XLSX.writeFile(workbook, `cv_parsed_${Date.now()}.xlsx`);
-		toast.success("✓ Downloaded Excel!");
+		toast.success("Đã tải Excel");
+	};
+
+	const handleClear = () => {
+		setResults([]);
+		setParsedNames([]);
 	};
 
 	return (
-		<div className="max-w-[720px]">
-			<FormSection title="Upload CV Files" icon="📄">
+		<div className="mx-auto max-w-[820px]">
+			<FormSection
+				title="Tệp CV"
+				icon={ScanText}
+				hint="Hỗ trợ PDF và ảnh. Mỗi tệp được xử lý thành một dòng dữ liệu."
+			>
 				<UploadZone files={files} onFilesChange={setFiles} />
 			</FormSection>
 
-			<FormSection title="Chọn trường cần extract" icon="🔧">
+			<FormSection
+				title="Trường cần trích xuất"
+				icon={SlidersHorizontal}
+				hint="Danh sách này được lưu lại trên trình duyệt cho lần dùng sau."
+			>
 				<FieldChips
 					fields={fields}
 					selected={selectedFields}
@@ -202,63 +208,118 @@ export default function CvParserContainer() {
 
 			<RunButton
 				isLoading={isLoading}
-				disabled={status !== "valid" || !files.length}
-				label={parseProgress || "Parse CV ngay"}
-				loadingLabel={parseProgress || "Đang parse..."}
+				disabled={status !== "valid" || !files.length || !selectedFields.size}
+				label={
+					files.length > 1
+						? `Bóc tách ${files.length} CV`
+						: "Bóc tách CV"
+				}
+				loadingLabel={
+					progress
+						? `Đang xử lý CV ${progress.done + 1}/${progress.total}…`
+						: "Đang xử lý…"
+				}
+				disabledHint={
+					status !== "valid"
+						? "Cần API key hợp lệ — mở Cấu hình để kết nối."
+						: !files.length
+							? "Tải lên ít nhất một tệp CV."
+							: "Chọn ít nhất một trường cần trích xuất."
+				}
 				onClick={handleParse}
 			/>
 
-			{showOutput && results.length > 0 && (
-				<div className="animate-fade-up mt-4">
-					{results.map((result, idx) => (
-						<div key={files[idx]?.name ?? idx} className="mb-6">
-							{results.length > 1 && (
-								<p className="text-[12px] font-mono text-ink-3 mb-3">
-									CV #{idx + 1}: {files[idx]?.name}
-								</p>
-							)}
-							<div className="grid grid-cols-2 gap-3">
-								{Array.from(selectedFields).map((key) => {
-									const field = fields.find((f) => f.key === key);
-									return (
+			{/* Progress bar reserves its own height, so the results below don't jump */}
+			{progress ? (
+				<div className="mt-4 rounded-xl border border-border-default bg-surface p-4">
+					<div className="mb-2 flex items-center justify-between text-[12px]">
+						<span className="font-medium text-ink-2">
+							Đang bóc tách {progress.done + 1} / {progress.total}
+						</span>
+						<span className="text-ink-3 tabular">
+							{Math.round((progress.done / progress.total) * 100)}%
+						</span>
+					</div>
+					<div
+						role="progressbar"
+						aria-valuemin={0}
+						aria-valuemax={progress.total}
+						aria-valuenow={progress.done}
+						className="h-1.5 overflow-hidden rounded-full bg-canvas-2"
+					>
+						<div
+							className="h-full rounded-full bg-ta-accent transition-[width] duration-300"
+							style={{
+								width: `${(progress.done / progress.total) * 100}%`,
+							}}
+						/>
+					</div>
+					<div className="mt-4 grid grid-cols-2 gap-3">
+						{fieldKeys.slice(0, 4).map((k) => (
+							<Skeleton key={k} className="h-16" />
+						))}
+					</div>
+				</div>
+			) : null}
+
+			{!progress && results.length > 0 ? (
+				<div className="animate-fade-up mt-4 rounded-xl border border-border-default bg-surface shadow-e2">
+					<header className="flex items-center gap-2 border-b border-border-soft bg-surface-2 px-5 py-3">
+						<Users className="size-3.5 text-ink-3" aria-hidden="true" />
+						<h2 className="text-[12.5px] font-semibold text-ink-2">
+							Dữ liệu đã bóc tách ({results.length} ứng viên)
+						</h2>
+					</header>
+
+					<div className="flex flex-col gap-5 p-5">
+						{results.map((result, idx) => (
+							<article key={parsedNames[idx] ?? idx}>
+								{results.length > 1 ? (
+									<h3 className="mb-2.5 flex items-baseline gap-2 text-[12px] font-semibold text-ink-2">
+										<span className="tabular">#{idx + 1}</span>
+										<span className="truncate font-normal text-ink-3">
+											{parsedNames[idx]}
+										</span>
+									</h3>
+								) : null}
+								<dl className="grid gap-2.5 sm:grid-cols-2">
+									{fieldKeys.map((key) => (
 										<ParsedResultCard
 											key={key}
-											label={field?.label ?? key}
+											label={fields.find((f) => f.key === key)?.label ?? key}
 											fieldKey={key}
 											value={result[key] ?? null}
 										/>
-									);
-								})}
-							</div>
-						</div>
-					))}
-
-					<div className="flex gap-2 mt-4 pt-4 border-t border-border-default flex-wrap">
-						<CopyButton getText={getTabSeparatedRow} label="Copy Excel Row" />
-						<button
-							type="button"
-							onClick={handleDownload}
-							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 bg-surface hover:border-ta-accent-2 hover:text-ta-accent-2 transition-all"
-						>
-							⬇️ Download CSV
-						</button>
-						<button
-							type="button"
-							onClick={handleDownloadExcel}
-							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 bg-surface hover:border-green-500 hover:text-green-500 transition-all"
-						>
-							📊 Download Excel
-						</button>
-						<button
-							type="button"
-							onClick={() => setShowOutput(false)}
-							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 bg-surface hover:text-ta-accent transition-all"
-						>
-							✕ Xóa
-						</button>
+									))}
+								</dl>
+							</article>
+						))}
 					</div>
+
+					<footer className="flex flex-wrap gap-2 border-t border-border-soft bg-surface-2 px-5 py-3">
+						<CopyButton getText={getTabSeparatedRow} label="Copy dòng Excel" />
+						<GhostButton onClick={handleDownloadCsv} icon={Download}>
+							Tải CSV
+						</GhostButton>
+						<GhostButton onClick={handleDownloadExcel} icon={FileSpreadsheet}>
+							Tải Excel
+						</GhostButton>
+						<GhostButton onClick={handleClear} icon={Trash2} tone="danger">
+							Xoá kết quả
+						</GhostButton>
+					</footer>
 				</div>
-			)}
+			) : null}
+
+			{!progress && !results.length && files.length > 0 ? (
+				<div className="mt-4">
+					<EmptyState
+						icon={ScanText}
+						title="Chưa có dữ liệu"
+						description={`${files.length} tệp đã sẵn sàng. Bấm "Bóc tách CV" để trích xuất dữ liệu ứng viên.`}
+					/>
+				</div>
+			) : null}
 		</div>
 	);
 }

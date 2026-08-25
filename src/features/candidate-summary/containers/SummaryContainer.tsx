@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useApiKeyStore } from "@/stores/apiKeyStore";
+import { useProviderStore } from "@/stores/providerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useClaudeApi } from "@/hooks/useClaudeApi";
 import { buildSystemPrompt, buildSummaryPrompt } from "@/lib/prompts";
@@ -12,13 +12,13 @@ import { summaryFormSchema, type SummaryFormValues } from "../types";
 import SummaryForm from "../components/SummaryForm";
 import RunButton from "@/components/shared/RunButton";
 import OutputBox from "@/components/shared/OutputBox";
-import CopyButton from "@/components/shared/CopyButton";
+import ResultActions from "@/components/shared/ResultActions";
+import { OutputSkeleton } from "@/components/shared/Skeleton";
 
 export default function SummaryContainer() {
 	const [output, setOutput] = useState("");
-	const [showOutput, setShowOutput] = useState(false);
 
-	const { status } = useApiKeyStore();
+	const status = useProviderStore((s) => s.status);
 	const { getContext } = useSettingsStore();
 	const { isLoading, call } = useClaudeApi();
 
@@ -28,40 +28,36 @@ export default function SummaryContainer() {
 	});
 
 	const handleSubmit = async (data: SummaryFormValues) => {
-		setShowOutput(false);
+		setOutput("");
 		const result = await call({
 			messages: [{ role: "user", content: buildSummaryPrompt(data) }],
 			system: buildSystemPrompt(getContext("ta_ctx_summary")),
 			maxTokens: 2000,
 		});
-		if (result) {
-			setOutput(result);
-			setShowOutput(true);
-		}
+		if (result) setOutput(result);
 	};
 
 	return (
-		<div className="max-w-[720px]">
+		<div className="mx-auto max-w-[820px]">
 			<SummaryForm form={form} onSubmit={handleSubmit} />
+
 			<RunButton
 				isLoading={isLoading}
 				disabled={status !== "valid"}
-				label="Tóm tắt ngay"
+				label="Soạn bản tóm tắt"
+				loadingLabel="Đang tóm tắt…"
+				disabledHint="Cần API key hợp lệ — mở Cấu hình để kết nối."
 				onClick={form.handleSubmit(handleSubmit)}
 			/>
+
+			{isLoading ? <OutputSkeleton /> : null}
+
 			<OutputBox
-				show={showOutput}
+				show={!isLoading && !!output}
+				title="Bản tóm tắt ứng viên"
 				html={formatText(output)}
 				actions={
-					<>
-						<CopyButton getText={() => output} />
-						<button
-							onClick={() => setShowOutput(false)}
-							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 hover:text-ta-accent transition-all"
-						>
-							✕ Xóa
-						</button>
-					</>
+					<ResultActions getText={() => output} onClear={() => setOutput("")} />
 				}
 			/>
 		</div>

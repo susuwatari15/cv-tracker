@@ -1,7 +1,9 @@
-import { initApiKeyStore } from "@/stores/apiKeyStore";
+import { initProviderStore } from "@/stores/providerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
+import { useCvFieldsStore } from "@/stores/cvFieldsStore";
 
 export function initStores() {
-  initApiKeyStore();
-  useSettingsStore.getState().loadFromStorage();
+	initProviderStore();
+	useSettingsStore.getState().loadFromStorage();
+	useCvFieldsStore.getState().loadFromStorage();
 }

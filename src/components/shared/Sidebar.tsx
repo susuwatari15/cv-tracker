@@ -1,130 +1,219 @@
 "use client";
 
+import { useEffect } from "react";
+import { ChevronRight, UserRound, X } from "lucide-react";
 import { useToolStore } from "@/stores/toolStore";
-// import { useApiKeyStore } from "@/stores/apiKeyStore";
-// import ApiStatusDot from "./ApiStatusDot";
-import type { ToolId } from "@/types";
+import { useProviderStore } from "@/stores/providerStore";
+import { useShellStore } from "@/stores/shellStore";
+import { TOOLS, TOOL_GROUPS } from "@/lib/toolMeta";
+import ApiStatusDot from "./ApiStatusDot";
+import ThemeToggle from "./ThemeToggle";
+import { cn } from "@/lib/utils";
 
-const TOOL_GROUPS = [
-	{
-		label: "Công cụ chính",
-		tools: [
-			{ id: "chat" as ToolId, icon: "💬", label: "Trợ lý AI" },
-			{ id: "cv-parser" as ToolId, icon: "📄", label: "CV Parser" },
-			{ id: "jd-writer" as ToolId, icon: "📝", label: "Soạn JD" },
-			{ id: "email-writer" as ToolId, icon: "📧", label: "Viết Email UV" },
-			{ id: "cv-eval" as ToolId, icon: "🔍", label: "Đánh giá CV vs JD" },
-		],
-	},
-	{
-		label: "Nội dung",
-		tools: [
-			{
-				id: "candidate-summary" as ToolId,
-				icon: "📋",
-				label: "Tóm tắt Candidate",
-			},
-			{
-				id: "salary-benchmark" as ToolId,
-				icon: "💰",
-				label: "Salary Benchmark",
-			},
-		],
-	},
-	{
-		label: "Cài đặt",
-		tools: [{ id: "settings" as ToolId, icon: "⚙️", label: "Settings" }],
-	},
-];
+const STATUS_COPY: Record<string, string> = {
+	valid: "Đã kết nối",
+	invalid: "Key không hợp lệ",
+	empty: "Chưa cấu hình",
+};
 
-export default function Sidebar() {
+function NavContent() {
 	const { activeTool, setActiveTool } = useToolStore();
-	// const { key, status, setKey } = useApiKeyStore();
+	const status = useProviderStore((s) => s.status);
+	const setNavOpen = useShellStore((s) => s.setNavOpen);
+
+	const overview = TOOLS.chat;
+	const OverviewIcon = overview.icon;
+
+	const select = (id: typeof activeTool) => {
+		setActiveTool(id);
+		setNavOpen(false); // drawer must close on navigate, or the choice is hidden
+	};
 
 	return (
-		<div className="min-[720px]:flex hidden w-[280px] min-w-[280px] shrink-0 flex-col h-full bg-ink overflow-y-auto">
-			{/* Brand header */}
-			<div className="px-5 pt-6 pb-5 border-b border-white/10">
-				<div className="flex items-center gap-2.5 mb-1">
-					<span className="text-ta-accent text-xl">✦</span>
-					<span className="text-white text-[17px] font-semibold tracking-tight">
+		<>
+			{/* Brand */}
+			<div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
+				<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-ta-accent text-sm font-bold text-ta-accent-fg">
+					TA
+				</span>
+				<span className="min-w-0">
+					<span className="block truncate text-[15px] font-bold leading-tight tracking-tight text-white">
 						TA Assistant
 					</span>
-				</div>
-				<p className="text-[11px] font-mono text-white/40 ml-8">
-					Tech Hiring
-				</p>
+					<span className="block truncate text-[11px] leading-tight text-white/55">
+						Talent Acquisition Toolkit
+					</span>
+				</span>
 			</div>
 
-			{/* API key row */}
-			{/* <div className="px-5 py-4 border-b border-white/10">
-				<label className="text-[10px] font-mono text-white/40 uppercase tracking-[0.8px] block mb-2">
-					Anthropic API Key
-				</label>
-				<div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-[8px] px-3 py-2">
-					<ApiStatusDot status={status} />
-					<input
-						type="password"
-						value={key}
-						onChange={(e) => setKey(e.target.value)}
-						placeholder="sk-ant-..."
-						className="flex-1 bg-transparent text-[12px] font-mono text-white placeholder:text-white/25 outline-none min-w-0"
-					/>
-				</div>
-				<p className="text-[10px] font-mono text-white/30 mt-1.5">
-					{status === "valid"
-						? "✓ Key hợp lệ"
-						: status === "invalid"
-							? "✗ Key không hợp lệ"
-							: "Nhập key để sử dụng"}
-				</p>
-			</div> */}
-
 			{/* Navigation */}
-			<nav className="flex-1 px-3 py-4 flex flex-col gap-5">
+			<nav aria-label="Công cụ" className="flex-1 overflow-y-auto px-3 py-4">
+				<NavItem
+					label={overview.label}
+					Icon={OverviewIcon}
+					active={activeTool === "chat"}
+					onClick={() => select("chat")}
+				/>
+
 				{TOOL_GROUPS.map((group) => (
-					<div key={group.label}>
-						<p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.8px] px-2 mb-2">
+					<div key={group.label} className="mt-5">
+						<h2 className="mb-1.5 px-3 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-white/55">
 							{group.label}
-						</p>
-						<div className="flex flex-col gap-0.5">
-							{group.tools.map((tool) => {
-								const isActive = activeTool === tool.id;
+						</h2>
+						<ul className="flex flex-col gap-0.5">
+							{group.tools.map((id) => {
+								const tool = TOOLS[id];
 								return (
-									<button
-										key={tool.id}
-										onClick={() => setActiveTool(tool.id)}
-										className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[13px] transition-all text-left w-full
-                      ${
-												isActive
-													? "bg-ta-accent/15 border border-ta-accent/30 text-white"
-													: "text-white/60 hover:bg-white/5 hover:text-white border border-transparent"
-											}`}
-									>
-										<span className="text-[15px]">{tool.icon}</span>
-										<span className="font-medium">{tool.label}</span>
-									</button>
+									<li key={id}>
+										<NavItem
+											label={tool.label}
+											Icon={tool.icon}
+											active={activeTool === id}
+											onClick={() => select(id)}
+										/>
+									</li>
 								);
 							})}
-						</div>
+						</ul>
 					</div>
 				))}
 			</nav>
 
-			{/* Profile chip */}
-			<div className="px-5 py-4 border-t border-white/10">
-				<div className="flex items-center gap-3">
-					<div className="w-8 h-8 rounded-full bg-gradient-to-br from-ta-accent to-ta-amber flex items-center justify-center text-white text-[13px] font-semibold shrink-0">
-						H
-					</div>
-					<div>
-						<p className="text-[12px] text-white font-medium">Hue Nguyen</p>
-						<p className="text-[10px] font-mono text-white/40">
-							TA Manager
-						</p>
-					</div>
-				</div>
+			{/* Connection status — reachable from every screen */}
+			<button
+				type="button"
+				onClick={() => select("settings")}
+				className="flex w-full cursor-pointer items-center gap-2.5 border-t border-white/10 px-5 py-3 text-left transition-colors hover:bg-white/5"
+			>
+				<ApiStatusDot status={status} onDark />
+				<span className="min-w-0 flex-1">
+					<span className="block text-[11px] leading-tight text-white/55">
+						Kết nối AI
+					</span>
+					<span className="block truncate text-[12px] font-medium leading-tight text-white/85">
+						{STATUS_COPY[status] ?? status}
+					</span>
+				</span>
+				<ChevronRight
+					className="size-3.5 shrink-0 text-white/50"
+					aria-hidden="true"
+				/>
+			</button>
+
+			{/* Account + appearance */}
+			<div className="flex items-center gap-3 border-t border-white/10 px-5 py-4">
+				<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/70">
+					<UserRound className="size-4" aria-hidden="true" />
+				</span>
+				<span className="min-w-0 flex-1">
+					<span className="block truncate text-[12.5px] font-medium leading-tight text-white">
+						Hue Nguyen
+					</span>
+					<span className="block truncate text-[11px] leading-tight text-white/55">
+						TA Manager
+					</span>
+				</span>
+				<ThemeToggle />
 			</div>
-		</div>
+		</>
+	);
+}
+
+function NavItem({
+	label,
+	Icon,
+	active,
+	onClick,
+}: {
+	label: string;
+	Icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+	active: boolean;
+	onClick: () => void;
+}) {
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			aria-current={active ? "page" : undefined}
+			className={cn(
+				"relative flex w-full cursor-pointer items-center gap-2.5 rounded-lg py-2 pl-3 pr-2.5",
+				"text-left text-[13px] font-medium transition-colors duration-150",
+				active
+					? "bg-white/10 text-white"
+					: "text-white/60 hover:bg-white/5 hover:text-white/90",
+			)}
+		>
+			{/* Active marker: a shape, not just a tint — survives greyscale */}
+			<span
+				aria-hidden="true"
+				className={cn(
+					"absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full transition-opacity",
+					active ? "bg-ta-accent opacity-100" : "opacity-0",
+				)}
+			/>
+			<Icon className="size-4 shrink-0" aria-hidden={true} />
+			<span className="truncate">{label}</span>
+		</button>
+	);
+}
+
+export default function Sidebar() {
+	const { navOpen, setNavOpen } = useShellStore();
+
+	// Escape closes the drawer — every overlay needs a keyboard exit.
+	useEffect(() => {
+		if (!navOpen) return;
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setNavOpen(false);
+		};
+		window.addEventListener("keydown", onKey);
+		return () => window.removeEventListener("keydown", onKey);
+	}, [navOpen, setNavOpen]);
+
+	return (
+		<>
+			{/* Docked rail — lg and up */}
+			<aside className="hidden h-full w-[264px] min-w-[264px] shrink-0 flex-col border-r border-white/10 bg-rail lg:flex">
+				<NavContent />
+			</aside>
+
+			{/* Off-canvas drawer — below lg */}
+			<div
+				className={cn(
+					"fixed inset-0 z-50 overflow-hidden lg:hidden",
+					navOpen ? "pointer-events-auto" : "pointer-events-none",
+				)}
+				aria-hidden={!navOpen}
+			>
+				{/* Scrim strong enough to isolate the drawer from the page behind */}
+				<div
+					onClick={() => setNavOpen(false)}
+					className={cn(
+						"absolute inset-0 bg-black/50 transition-opacity duration-200",
+						navOpen ? "opacity-100" : "opacity-0",
+					)}
+				/>
+				<aside
+					role="dialog"
+					aria-modal={navOpen}
+					aria-label="Điều hướng"
+					className={cn(
+						"absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col bg-rail shadow-e4",
+						"transition-transform duration-200 ease-out",
+						navOpen ? "translate-x-0" : "-translate-x-full",
+					)}
+				>
+					<button
+						type="button"
+						onClick={() => setNavOpen(false)}
+						aria-label="Đóng điều hướng"
+						className="absolute right-3 top-4 flex size-9 cursor-pointer items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+					>
+						<X className="size-4" aria-hidden="true" />
+					</button>
+					<NavContent />
+				</aside>
+			</div>
+		</>
 	);
 }

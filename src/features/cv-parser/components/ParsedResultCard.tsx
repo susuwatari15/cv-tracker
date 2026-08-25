@@ -9,51 +9,61 @@ export default function ParsedResultCard({
 	fieldKey,
 	value,
 }: ParsedResultCardProps) {
-	const isEmpty = value === null || value === undefined || value === "";
+	const isEmpty =
+		value === null || value === undefined || value === "" ||
+		(Array.isArray(value) && value.length === 0);
 
 	const renderValue = () => {
 		if (isEmpty) {
 			return (
-				<span className="text-ink-3 italic text-[12px]">— không tìm thấy</span>
+				<span className="text-[12.5px] italic text-ink-4">
+					Không tìm thấy trong CV
+				</span>
 			);
 		}
 
-		if (fieldKey === "skills" && Array.isArray(value)) {
+		if (Array.isArray(value)) {
 			return (
-				<div className="flex flex-wrap gap-1.5 mt-1">
-					{value.map((skill, i) => (
+				<span className="flex flex-wrap gap-1.5">
+					{value.map((item, i) => (
 						<span
 							key={i}
-							className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-ta-accent-2/10 text-ta-accent-2 border border-ta-accent-2/30"
+							className="rounded-full border border-border-default bg-canvas-2 px-2 py-0.5 text-[11.5px] font-medium text-ink-2"
 						>
-							{skill}
+							{item}
 						</span>
 					))}
-				</div>
+				</span>
 			);
 		}
 
 		if (fieldKey === "name") {
 			return (
-				<span className="text-ta-accent font-semibold text-[15px] ">
+				<span className="text-[15px] font-bold leading-snug text-ink">
 					{String(value)}
 				</span>
 			);
 		}
 
+		// Contact and numeric fields get tabular figures so columns line up.
+		const isData = ["phone", "email", "years_exp", "expected_salary"].includes(
+			fieldKey,
+		);
 		return (
-			<span className="text-ink text-[13px] ">
-				{Array.isArray(value) ? value.join(", ") : String(value)}
+			<span
+				className={`text-[13px] leading-snug text-ink ${isData ? "tabular" : ""}`}
+			>
+				{String(value)}
 			</span>
 		);
 	};
 
 	return (
-		<div className="bg-surface border border-border-default rounded-[10px] p-3.5">
-			<p className="text-[10px] font-mono text-ink-3 uppercase tracking-[0.8px] mb-1.5">
+		<div className="rounded-lg border border-border-default bg-surface p-3">
+			<dt className="mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">
 				{label}
-			</p>
-			{renderValue()}
+			</dt>
+			<dd className="block">{renderValue()}</dd>
 		</div>
 	);
 }

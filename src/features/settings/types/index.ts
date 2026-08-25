@@ -1,42 +1,59 @@
 import type { ContextKey } from "@/stores/settingsStore";
+import type { ToolId } from "@/types";
+
+/** Panels in the settings secondary navigation. */
+export type SettingsSectionId = "connection" | "context";
 
 export interface BusinessContextField {
-  key: ContextKey;
-  label: string;
-  placeholder: string;
+	key: ContextKey;
+	/** Which tool this context is injected into. Drives label + icon. */
+	toolId: ToolId;
+	/** Persistent guidance under the field. */
+	hint: string;
+	placeholder: string;
 }
 
 export const BUSINESS_CONTEXT_FIELDS: BusinessContextField[] = [
-  {
-    key: "ta_ctx_chat",
-    label: "Trợ lý AI",
-    placeholder: "VD: Hue Nguyen, TA Manager at Masan Group...",
-  },
-  {
-    key: "ta_ctx_jd",
-    label: "Soạn JD",
-    placeholder: "VD: Company: Masan Group. Tone: semi-formal, tech-savvy...",
-  },
-  {
-    key: "ta_ctx_email",
-    label: "Viết Email UV",
-    placeholder: "VD: Sender: Hue Nguyen, TA Manager...",
-  },
-  {
-    key: "ta_ctx_eval",
-    label: "Đánh giá CV vs JD",
-    placeholder:
-      "VD: Focus on tech roles. Provide fit score, strengths, gaps...",
-  },
-  {
-    key: "ta_ctx_summary",
-    label: "Tóm tắt Candidate",
-    placeholder:
-      "VD: Summary audience: CTO or Tech Director. ~150-200 words...",
-  },
-  {
-    key: "ta_ctx_salary",
-    label: "Salary Benchmark",
-    placeholder: "VD: Market: Vietnam tech sector, 2024-2025. TP.HCM...",
-  },
+	{
+		key: "ta_ctx_chat",
+		toolId: "chat",
+		hint: "Bối cảnh chung cho trợ lý ở panel bên phải: bạn là ai, làm ở đâu.",
+		placeholder:
+			"Hue Nguyen, TA Manager tại Masan Group, phụ trách tuyển dụng khối công nghệ.",
+	},
+	{
+		key: "ta_ctx_jd",
+		toolId: "jd-writer",
+		hint: "Giọng văn, cấu trúc JD chuẩn và các mục bắt buộc phải có.",
+		placeholder:
+			"Công ty: Masan Group. Tone: bán chính thức, thân thiện với dân kỹ thuật. Luôn có mục quyền lợi.",
+	},
+	{
+		key: "ta_ctx_email",
+		toolId: "email-writer",
+		hint: "Người gửi, chữ ký và mức độ trang trọng mong muốn.",
+		placeholder:
+			"Người gửi: Hue Nguyen — TA Manager. Ký tên đầy đủ kèm số điện thoại.",
+	},
+	{
+		key: "ta_ctx_eval",
+		toolId: "cv-eval",
+		hint: "Tiêu chí chấm điểm và định dạng kết quả bạn muốn nhận.",
+		placeholder:
+			"Tập trung vào vị trí công nghệ. Luôn đưa điểm phù hợp, điểm mạnh và khoảng trống.",
+	},
+	{
+		key: "ta_ctx_summary",
+		toolId: "candidate-summary",
+		hint: "Người đọc bản tóm tắt và độ dài mong muốn.",
+		placeholder:
+			"Người đọc: CTO hoặc Tech Director. Độ dài 150–200 từ, kết bằng khuyến nghị rõ ràng.",
+	},
+	{
+		key: "ta_ctx_salary",
+		toolId: "salary-benchmark",
+		hint: "Thị trường tham chiếu, đơn vị tiền tệ và mốc thời gian dữ liệu.",
+		placeholder:
+			"Thị trường công nghệ Việt Nam 2024–2025, chủ yếu TP.HCM. Đơn vị: triệu VND gross/tháng.",
+	},
 ];
