@@ -4,13 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ==========================================================================
+   TA Assistant — design tokens
+   Architecture inherited from DESIGN.md (4px spacing base, 0–4 elevation
+   ladder, radius scale, hairline border tiers, ink text ramp).
+   Identity layer recalibrated for HR / talent-acquisition operations:
+   navy authority + action blue, neutral slate surfaces, semantic status set.
+   Never hardcode a hex in a component — add a token here instead.
+   ========================================================================== */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-montserrat), serif;
-  --font-mono: var(--font-roboto-mono), monospace;
-  --font-montserrat: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, monospace;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -40,117 +49,266 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* TA Assistant custom tokens */
-  --color-canvas: #f7f4ef;
-  --color-canvas-2: #eee9e0;
-  --color-surface: #ffffff;
-  --color-border-default: #e0d8cc;
-  --color-border-strong: #cec4b4;
-  --color-ink: #1a1714;
-  --color-ink-2: #6b6458;
-  --color-ink-3: #a09890;
-  --color-ta-accent: #c4673a;
-  --color-ta-accent-hover: #b55a30;
-  --color-ta-accent-2: #2d6a4f;
-  --color-ta-accent-3: #4a6fa5;
-  --color-ta-amber: #d4a017;
+  /* Radius scale — DESIGN.md ladder, tightened for app density */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.25);
+  --radius-2xl: calc(var(--radius) * 1.75);
+  --radius-3xl: calc(var(--radius) * 2.25);
+  --radius-4xl: calc(var(--radius) * 3);
+
+  /* Elevation ladder — flat by default, depth reserved for overlays */
+  --shadow-e1: 0 1px 2px 0 rgb(11 18 32 / 0.04);
+  --shadow-e2: 0 1px 3px 0 rgb(11 18 32 / 0.06), 0 1px 2px -1px rgb(11 18 32 / 0.05);
+  --shadow-e3: 0 4px 12px -2px rgb(11 18 32 / 0.08);
+  --shadow-e4: 0 16px 40px -8px rgb(11 18 32 / 0.18);
+
+  /* ---- Surfaces ---- */
+  --color-canvas: var(--canvas);
+  --color-canvas-2: var(--canvas-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+
+  /* Navigation rail (always dark, both themes) */
+  --color-rail: var(--rail);
+  --color-rail-raised: var(--rail-raised);
+
+  /* ---- Borders: three weights, per DESIGN.md hairline tiers ---- */
+  --color-border-soft: var(--border-soft);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  /* ---- Text ramp ---- */
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+
+  /* ---- Brand / action ---- */
+  --color-ta-accent: var(--ta-accent);
+  --color-ta-accent-hover: var(--ta-accent-hover);
+  --color-ta-accent-fg: var(--ta-accent-fg);
+  --color-ta-accent-soft: var(--ta-accent-soft);
+  --color-ta-navy: var(--ta-navy);
+
+  /* ---- Semantic status ---- */
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-border: var(--success-border);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-border: var(--warning-border);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-border: var(--danger-border);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-border: var(--info-border);
+
+  /* Legacy aliases kept so untouched call sites stay on-system */
+  --color-ta-accent-2: var(--success);
+  --color-ta-accent-3: var(--info);
+  --color-ta-amber: var(--warning);
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 0.625rem; /* 10px — card/base radius */
+
+  /* Surfaces */
+  --canvas: #f5f7fa;
+  --canvas-2: #eef2f7;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --rail: #0f172a;
+  --rail-raised: #1b2438;
+
+  /* Borders */
+  --border-soft: #eef1f6;
+  --border-default: #e2e8f0;
+  --border-strong: #c9d3e0;
+
+  /* Text ramp — all ≥4.5:1 on --surface except ink-4 (decorative/placeholder) */
+  --ink: #0b1220;
+  --ink-2: #3f4b60;
+  --ink-3: #5c6b82;
+  --ink-4: #7d8da4;
+
+  /* Action blue — single CTA color across both themes */
+  --ta-accent: #0b5cad;
+  --ta-accent-hover: #094a8c;
+  --ta-accent-fg: #ffffff;
+  --ta-accent-soft: #eaf3fc;
+  --ta-navy: #0f172a;
+
+  /* Semantic status */
+  --success: #04785b;
+  --success-soft: #ecfdf5;
+  --success-border: #a7f3d0;
+  --warning: #9a5b06;
+  --warning-soft: #fffbeb;
+  --warning-border: #fde68a;
+  --danger: #c81e1e;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --info: #0b5cad;
+  --info-soft: #eaf3fc;
+  --info-border: #bfdbfe;
+
+  /* shadcn primitive bindings — mapped onto the tokens above */
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--ta-navy);
+  --primary-foreground: #ffffff;
+  --secondary: var(--canvas-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--ta-accent-soft);
+  --accent-foreground: var(--ta-accent);
+  --destructive: var(--danger);
+  --border: var(--border-default);
+  --input: var(--border-strong);
+  --ring: var(--ta-accent);
+
+  --chart-1: #0b5cad;
+  --chart-2: #04785b;
+  --chart-3: #9a5b06;
+  --chart-4: #6d28d9;
+  --chart-5: #be185d;
+
+  --sidebar: var(--rail);
+  --sidebar-foreground: #e9eef6;
+  --sidebar-primary: var(--ta-accent);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--rail-raised);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.1);
+  --sidebar-ring: #7cb0e6;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --canvas: #0a1018;
+  --canvas-2: #111926;
+  --surface: #141d2b;
+  --surface-2: #1a2434;
+  --rail: #070d15;
+  --rail-raised: #1a2434;
+
+  --border-soft: #1e293b;
+  --border-default: #263349;
+  --border-strong: #3a4a63;
+
+  --ink: #eaf0f8;
+  --ink-2: #b3c1d6;
+  --ink-3: #94a5bd;
+  --ink-4: #6b7c94;
+
+  /* Lightened action blue: dark foreground keeps AA on a saturated fill */
+  --ta-accent: #6cb1f5;
+  --ta-accent-hover: #8cc3f8;
+  --ta-accent-fg: #08121f;
+  --ta-accent-soft: #16283d;
+  --ta-navy: #eaf0f8;
+
+  --success: #4ade80;
+  --success-soft: #10261d;
+  --success-border: #1c4736;
+  --warning: #fcd34d;
+  --warning-soft: #2a2110;
+  --warning-border: #57431a;
+  --danger: #fca5a5;
+  --danger-soft: #2a1417;
+  --danger-border: #5c2529;
+  --info: #6cb1f5;
+  --info-soft: #16283d;
+  --info-border: #24425f;
+
+  --primary: var(--ta-accent);
+  --primary-foreground: var(--ta-accent-fg);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--ta-accent-soft);
+  --accent-foreground: var(--ta-accent);
+  --destructive: var(--danger);
+  --input: var(--border-strong);
+  --ring: var(--ta-accent);
+
+  --chart-1: #6cb1f5;
+  --chart-2: #4ade80;
+  --chart-3: #fcd34d;
+  --chart-4: #a78bfa;
+  --chart-5: #f472b6;
+
+  --sidebar-foreground: var(--ink);
+  --sidebar-accent: var(--rail-raised);
+  --sidebar-border: rgb(255 255 255 / 0.08);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  html,
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+    /* Nothing in an app shell should ever scroll the page sideways. */
+    overflow-x: hidden;
   }
-  html {
-    @apply font-sans;
+
+  body {
+    @apply bg-canvas text-ink;
+    font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Never remove the focus ring — recolor it. Keyboard nav depends on it. */
+  :focus-visible {
+    outline: 2px solid var(--ta-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Numeric columns must not reflow as digits change */
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
 }
 
-/* TA Assistant animations */
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Uppercase micro-label — replaces the old monospace field labels */
+  .label-micro {
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+}
+
+/* ==========================================================================
+   Motion — 150–300ms, opacity/transform only, reduced-motion honoured
+   ========================================================================== */
+
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -159,14 +317,14 @@
 }
 
 .animate-fade-up {
-  animation: fadeUp 0.35s ease;
+  animation: fadeUp 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes blink {
   0%,
   100% {
-    opacity: 0.3;
-    transform: scale(0.8);
+    opacity: 0.25;
+    transform: scale(0.85);
   }
   50% {
     opacity: 1;
@@ -175,28 +333,97 @@
 }
 
 .animate-blink {
-  animation: blink 1.2s infinite;
+  animation: blink 1.2s ease-in-out infinite;
 }
 
-/* Scrollbar styling */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   AI output prose — formatText() emits semantic HTML, styled here
+   ========================================================================== */
+
+.prose-ai {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.prose-ai > * + * {
+  margin-top: 0.75rem;
+}
+.prose-ai h3 {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 1.25rem;
+  color: var(--ink);
+}
+.prose-ai h4 {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  margin-top: 1rem;
+  color: var(--ta-accent);
+}
+.prose-ai strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.prose-ai ul {
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+.prose-ai li {
+  margin-top: 0.25rem;
+}
+.prose-ai li::marker {
+  color: var(--ink-4);
+}
+.prose-ai code {
+  font-family: var(--font-mono-face), ui-monospace, monospace;
+  font-size: 0.88em;
+  background: var(--canvas-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+.prose-ai a {
+  color: var(--ta-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ==========================================================================
+   Scrollbars — theme-aware, non-intrusive
+   ========================================================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cec4b4;
-  border-radius: 10px;
+  background: var(--border-strong);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a09890;
-}
-
-/* Font utility classes */
-.font-mono {
-  font-family: var(--font-mono), monospace;
-}
-.font-montserrat {
-  font-family: var(--font-montserrat), sans-serif;
+  background: var(--ink-4);
+  background-clip: content-box;
 }

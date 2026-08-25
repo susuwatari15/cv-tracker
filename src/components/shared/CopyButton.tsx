@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { Check, Copy } from "lucide-react";
 import { toast } from "sonner";
+import GhostButton from "./GhostButton";
 
 interface CopyButtonProps {
 	getText: () => string;
@@ -11,18 +14,27 @@ export default function CopyButton({
 	getText,
 	label = "Copy",
 }: CopyButtonProps) {
-	const handleCopy = () => {
-		navigator.clipboard.writeText(getText()).then(() => {
-			toast.success("✓ Đã copy!");
-		});
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = async () => {
+		try {
+			await navigator.clipboard.writeText(getText());
+			setCopied(true);
+			toast.success("Đã copy vào clipboard");
+			// Confirm inline for ~2s, then return to the resting label.
+			window.setTimeout(() => setCopied(false), 2000);
+		} catch {
+			toast.error("Không copy được — trình duyệt đã chặn clipboard");
+		}
 	};
 
 	return (
-		<button
+		<GhostButton
 			onClick={handleCopy}
-			className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 bg-surface hover:border-ta-accent-2 hover:text-ta-accent-2 transition-all"
+			icon={copied ? Check : Copy}
+			tone={copied ? "success" : "default"}
 		>
-			📋 {label}
-		</button>
+			{copied ? "Đã copy" : label}
+		</GhostButton>
 	);
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useApiKeyStore } from "@/stores/apiKeyStore";
+import { useProviderStore } from "@/stores/providerStore";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useClaudeApi } from "@/hooks/useClaudeApi";
 import { buildSystemPrompt, buildJdPrompt } from "@/lib/prompts";
@@ -12,13 +12,13 @@ import { jdFormSchema, type JdFormValues } from "../types";
 import JdForm from "../components/JdForm";
 import RunButton from "@/components/shared/RunButton";
 import OutputBox from "@/components/shared/OutputBox";
-import CopyButton from "@/components/shared/CopyButton";
+import ResultActions from "@/components/shared/ResultActions";
+import { OutputSkeleton } from "@/components/shared/Skeleton";
 
 export default function JdWriterContainer() {
 	const [output, setOutput] = useState("");
-	const [showOutput, setShowOutput] = useState(false);
 
-	const { status } = useApiKeyStore();
+	const status = useProviderStore((s) => s.status);
 	const { getContext } = useSettingsStore();
 	const { isLoading, call } = useClaudeApi();
 
@@ -35,40 +35,36 @@ export default function JdWriterContainer() {
 	});
 
 	const handleSubmit = async (data: JdFormValues) => {
-		setShowOutput(false);
+		setOutput("");
 		const result = await call({
 			messages: [{ role: "user", content: buildJdPrompt(data) }],
 			system: buildSystemPrompt(getContext("ta_ctx_jd")),
 			maxTokens: 2000,
 		});
-		if (result) {
-			setOutput(result);
-			setShowOutput(true);
-		}
+		if (result) setOutput(result);
 	};
 
 	return (
-		<div className="max-w-[720px]">
+		<div className="mx-auto max-w-[820px]">
 			<JdForm form={form} onSubmit={handleSubmit} />
+
 			<RunButton
 				isLoading={isLoading}
 				disabled={status !== "valid"}
-				label="Soạn JD ngay"
+				label="Soạn bản JD"
+				loadingLabel="Đang soạn JD…"
+				disabledHint="Cần API key hợp lệ — mở Cấu hình để kết nối."
 				onClick={form.handleSubmit(handleSubmit)}
 			/>
+
+			{isLoading ? <OutputSkeleton /> : null}
+
 			<OutputBox
-				show={showOutput}
+				show={!isLoading && !!output}
+				title="Bản mô tả công việc"
 				html={formatText(output)}
 				actions={
-					<>
-						<CopyButton getText={() => output} />
-						<button
-							onClick={() => setShowOutput(false)}
-							className="px-3 py-1.5 rounded-[8px] text-xs font-mono border border-border-strong text-ink-2 hover:text-ta-accent transition-all"
-						>
-							✕ Xóa
-						</button>
-					</>
+					<ResultActions getText={() => output} onClear={() => setOutput("")} />
 				}
 			/>
 		</div>

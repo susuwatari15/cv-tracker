@@ -1,18 +1,29 @@
+import { Sparkles } from "lucide-react";
+
 export default function ThinkingIndicator() {
-  return (
-    <div className="flex gap-3 animate-fade-up">
-      <div className="w-8 h-8 rounded-full bg-ta-accent flex items-center justify-center text-white text-[13px] shrink-0 ">
-        ✦
-      </div>
-      <div className="flex items-center gap-[5px] px-[18px] py-[14px] bg-surface border border-border-default rounded-2xl rounded-tl-[4px]">
-        {[0, 200, 400].map((delay) => (
-          <span
-            key={delay}
-            className="w-[7px] h-[7px] rounded-full bg-ink-3 animate-blink"
-            style={{ animationDelay: `${delay}ms` }}
-          />
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div
+			className="animate-fade-up flex gap-2.5"
+			role="status"
+			aria-live="polite"
+		>
+			<span
+				aria-hidden="true"
+				className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-ta-accent text-ta-accent-fg"
+			>
+				<Sparkles className="size-3.5" />
+			</span>
+			<div className="flex items-center gap-1.5 rounded-xl rounded-tl-sm border border-border-default bg-surface-2 px-4 py-3.5">
+				{[0, 160, 320].map((delay) => (
+					<span
+						key={delay}
+						aria-hidden="true"
+						className="size-1.5 rounded-full bg-ink-4 animate-blink"
+						style={{ animationDelay: `${delay}ms` }}
+					/>
+				))}
+				<span className="sr-only">Trợ lý đang soạn câu trả lời…</span>
+			</div>
+		</div>
+	);
 }

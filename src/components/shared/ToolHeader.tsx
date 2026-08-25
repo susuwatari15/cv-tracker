@@ -1,55 +1,59 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import { useToolStore } from "@/stores/toolStore";
-
-const TOOL_META: Record<string, { title: string; desc: string }> = {
-	"cv-parser": {
-		title: "CV Parser",
-		desc: "Upload PDF/ảnh CV → AI extract thông tin → copy vào Excel",
-	},
-	"jd-writer": {
-		title: "Soạn JD",
-		desc: "Tạo Job Description chuẩn cho tech roles",
-	},
-	"email-writer": {
-		title: "Viết Email Ứng Viên",
-		desc: "Mời PV, reject, offer — bán tự động, cá nhân hóa",
-	},
-	"cv-eval": {
-		title: "Đánh giá CV vs JD",
-		desc: "Phân tích mức độ phù hợp của ứng viên với vị trí",
-	},
-	"candidate-summary": {
-		title: "Tóm tắt Candidate",
-		desc: "Tóm tắt profile cho hiring manager",
-	},
-	"salary-benchmark": {
-		title: "Salary Benchmark",
-		desc: "Tư vấn mức lương thị trường tech VN 2024-2025",
-	},
-	settings: {
-		title: "Settings",
-		desc: "Cấu hình API key và Business Context cho từng công cụ",
-	},
-	chat: {
-		title: "Trợ lý AI",
-		desc: "Chat tự do — hỏi bất cứ điều gì liên quan đến công việc TA",
-	},
-};
+import { useProviderStore } from "@/stores/providerStore";
+import { useShellStore } from "@/stores/shellStore";
+import { getTool } from "@/lib/toolMeta";
+import { PROVIDERS } from "@/lib/ai/providers";
 
 export default function ToolHeader() {
 	const activeTool = useToolStore((s) => s.activeTool);
-	const meta = TOOL_META[activeTool] ?? { title: activeTool, desc: "" };
+	const provider = useProviderStore((s) => s.provider);
+	const model = useProviderStore((s) => s.getModel());
+	const setNavOpen = useShellStore((s) => s.setNavOpen);
+
+	const tool = getTool(activeTool);
+	const Icon = tool.icon;
 
 	return (
-		<div className="flex items-center justify-between px-8 py-5 border-b border-border-default bg-surface shrink-0">
-			<div>
-				<h2 className=" text-[18px] font-semibold text-ink">{meta.title}</h2>
-				<p className="text-[12px] font-mono text-ink-3 mt-0.5">{meta.desc}</p>
-			</div>
-			<span className="text-[11px] font-mono text-ink-3 bg-canvas-2 border border-border-default px-2.5 py-1 rounded-full">
-				claude-opus-4-5
+		<header className="flex shrink-0 items-center gap-3 border-b border-border-default bg-surface px-4 py-3 md:px-7 md:py-4">
+			{/* Drawer trigger — the only way to reach nav below lg */}
+			<button
+				type="button"
+				onClick={() => setNavOpen(true)}
+				aria-label="Mở điều hướng"
+				className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border-default text-ink-2 transition-colors hover:bg-canvas-2 lg:hidden"
+			>
+				<Menu className="size-4" aria-hidden="true" />
+			</button>
+
+			<span className="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-ta-accent-soft text-ta-accent md:flex">
+				<Icon className="size-4" aria-hidden="true" />
 			</span>
-		</div>
+
+			<div className="min-w-0 flex-1">
+				<h1 className="truncate text-[15px] font-bold leading-tight tracking-tight text-ink md:text-base">
+					{tool.label}
+				</h1>
+				<p className="mt-0.5 hidden truncate text-[12.5px] leading-tight text-ink-3 sm:block">
+					{tool.description}
+				</p>
+			</div>
+
+			{/* Which model produced the output — an audit detail HR needs */}
+			<span
+				title={`${PROVIDERS[provider]?.label ?? provider} · ${model}`}
+				className="hidden max-w-[260px] shrink items-center gap-2 whitespace-nowrap rounded-full border border-border-default bg-canvas-2 px-3 py-1.5 xl:flex"
+			>
+				<span className="shrink-0 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-ink-3">
+					{PROVIDERS[provider]?.label ?? provider}
+				</span>
+				<span className="h-3 w-px bg-border-strong" aria-hidden="true" />
+				<span className="truncate font-mono text-[11px] text-ink-2">
+					{model}
+				</span>
+			</span>
+		</header>
 	);
 }

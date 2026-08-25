@@ -1,28 +1,42 @@
-import type { Metadata } from "next";
-import {  Montserrat, Roboto_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import ThemeProvider from "@/components/shared/ThemeProvider";
 import "./globals.css";
 
- 
-const montserrat = Montserrat({
-	subsets: ["latin"],
-	variable: "--font-montserrat",
+/**
+ * Plus Jakarta Sans — enterprise-SaaS legibility at the 12–15px sizes this
+ * app actually renders at, with full Vietnamese diacritic coverage.
+ * Weights are deliberately limited to the four the design system uses.
+ */
+const jakarta = Plus_Jakarta_Sans({
+	subsets: ["latin", "latin-ext", "vietnamese"],
+	variable: "--font-jakarta",
 	display: "swap",
-	weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-	style: ["normal", "italic"],
+	weight: ["400", "500", "600", "700"],
 });
 
-const robotoMono = Roboto_Mono({
+/** Mono is reserved for machine data: API keys, model ids, field keys. */
+const mono = JetBrains_Mono({
 	subsets: ["latin"],
-	variable: "--font-roboto-mono",
+	variable: "--font-mono-face",
 	display: "swap",
-	weight: ["100", "200", "300", "400", "500", "600", "700"],
-	style: ["normal", "italic"],
+	weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
-	title: "Hue's TA Assistant",
-	description: "AI-Powered Talent Acquisition Toolkit — Masan Group",
+	title: "TA Assistant — Talent Acquisition Toolkit",
+	description:
+		"Bộ công cụ AI cho tuyển dụng: sàng lọc CV, soạn JD, đánh giá ứng viên, benchmark lương.",
+};
+
+export const viewport: Viewport = {
+	width: "device-width",
+	initialScale: 1,
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: "#f5f7fa" },
+		{ media: "(prefers-color-scheme: dark)", color: "#0a1018" },
+	],
 };
 
 export default function RootLayout({
@@ -31,10 +45,21 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="vi" className={`${robotoMono.variable} ${montserrat.variable}`}>
+		<html
+			lang="vi"
+			className={`${jakarta.variable} ${mono.variable}`}
+			suppressHydrationWarning
+		>
 			<body>
-				{children}
-				<Toaster position="bottom-right" />
+				<ThemeProvider>
+					{children}
+					{/* Clears the floating assistant button in the same corner. */}
+					<Toaster
+						position="bottom-right"
+						offset={{ bottom: 80, right: 16 }}
+						mobileOffset={{ bottom: 80, right: 16 }}
+					/>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

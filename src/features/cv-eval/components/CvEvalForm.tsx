@@ -1,44 +1,53 @@
 import { UseFormReturn } from "react-hook-form";
+import { GitCompareArrows } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import FormSection from "@/components/shared/FormSection";
 import FieldGroup from "@/components/shared/FieldGroup";
 import type { CvEvalFormValues } from "../types";
 
 interface CvEvalFormProps {
-  form: UseFormReturn<CvEvalFormValues>;
-  onSubmit: (data: CvEvalFormValues) => void;
+	form: UseFormReturn<CvEvalFormValues>;
+	onSubmit: (data: CvEvalFormValues) => void;
 }
 
 export default function CvEvalForm({ form }: CvEvalFormProps) {
-  return (
-    <FormSection title="Đánh giá CV fit với JD" icon="🔍">
-      <div className="flex flex-col gap-3.5">
-        <FieldGroup label="Tóm tắt JD / Yêu cầu vị trí" required>
-          <Textarea
-            {...form.register("jd")}
-            placeholder="Paste JD hoặc tóm tắt yêu cầu: Level, skills bắt buộc, nice-to-have, kinh nghiệm..."
-            className="min-h-[100px]"
-          />
-          {form.formState.errors.jd && (
-            <span className="text-red-500 text-xs">
-              {form.formState.errors.jd.message}
-            </span>
-          )}
-        </FieldGroup>
+	const { errors } = form.formState;
 
-        <FieldGroup label="Thông tin CV / Hồ sơ ứng viên" required>
-          <Textarea
-            {...form.register("cv")}
-            placeholder="Paste nội dung CV hoặc tóm tắt: tên, kinh nghiệm, skills, công ty cũ, học vấn..."
-            className="min-h-[120px]"
-          />
-          {form.formState.errors.cv && (
-            <span className="text-red-500 text-xs">
-              {form.formState.errors.cv.message}
-            </span>
-          )}
-        </FieldGroup>
-      </div>
-    </FormSection>
-  );
+	return (
+		<FormSection
+			title="So khớp hồ sơ với vị trí"
+			icon={GitCompareArrows}
+			hint="Dán cả hai phía để có đánh giá hai chiều: hồ sơ đáp ứng gì và còn thiếu gì."
+		>
+			<div className="flex flex-col gap-4">
+				<FieldGroup
+					label="Yêu cầu vị trí (JD)"
+					required
+					hint="Cấp bậc, kỹ năng bắt buộc, nice-to-have, số năm kinh nghiệm."
+					error={errors.jd?.message}
+				>
+					<Textarea
+						{...form.register("jd")}
+						placeholder="Dán JD hoặc tóm tắt yêu cầu tuyển dụng…"
+						aria-invalid={!!errors.jd}
+						className="min-h-[110px]"
+					/>
+				</FieldGroup>
+
+				<FieldGroup
+					label="Hồ sơ ứng viên"
+					required
+					hint="Kinh nghiệm, kỹ năng, công ty gần nhất, học vấn."
+					error={errors.cv?.message}
+				>
+					<Textarea
+						{...form.register("cv")}
+						placeholder="Dán nội dung CV hoặc tóm tắt hồ sơ…"
+						aria-invalid={!!errors.cv}
+						className="min-h-[130px]"
+					/>
+				</FieldGroup>
+			</div>
+		</FormSection>
+	);
 }

@@ -1,35 +1,49 @@
+import { Sparkles, UserRound } from "lucide-react";
 import { formatText } from "@/lib/formatText";
+import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
-  role: "user" | "assistant";
-  content: string;
+	role: "user" | "assistant";
+	content: string;
 }
 
 export default function MessageBubble({ role, content }: MessageBubbleProps) {
-  return (
-    <div
-      className={`flex gap-3 animate-fade-up ${
-        role === "user" ? "flex-row-reverse" : ""
-      }`}
-    >
-      <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] shrink-0 mt-0.5 font-semibold text-white ${
-            role === "assistant"
-              ? "bg-ta-accent"
-              : "bg-gradient-to-br from-ta-accent to-ta-amber"
-          }`}
-      >
-        {role === "assistant" ? "✦" : "H"}
-      </div>
-      <div
-        className={`max-w-[72%] px-[18px] py-[14px] text-[13.5px] leading-[1.65] rounded-2xl
-          ${
-            role === "assistant"
-              ? "bg-surface border border-border-default rounded-tl-[4px] text-ink shadow-sm"
-              : "bg-ink text-[#f7f4ef] rounded-tr-[4px]"
-          }`}
-        dangerouslySetInnerHTML={{ __html: formatText(content) }}
-      />
-    </div>
-  );
+	const isUser = role === "user";
+
+	return (
+		<div className={cn("animate-fade-up flex gap-2.5", isUser && "flex-row-reverse")}>
+			<span
+				aria-hidden="true"
+				className={cn(
+					"mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full",
+					isUser
+						? "bg-canvas-2 text-ink-2"
+						: "bg-ta-accent text-ta-accent-fg",
+				)}
+			>
+				{isUser ? (
+					<UserRound className="size-3.5" />
+				) : (
+					<Sparkles className="size-3.5" />
+				)}
+			</span>
+
+			<div
+				className={cn(
+					"max-w-[80%] rounded-xl px-3.5 py-2.5",
+					isUser
+						? "rounded-tr-sm bg-ta-accent text-ta-accent-fg"
+						: "rounded-tl-sm border border-border-default bg-surface-2 text-ink",
+				)}
+			>
+				<span className="sr-only">
+					{isUser ? "Bạn: " : "Trợ lý: "}
+				</span>
+				<div
+					className={cn("prose-ai text-[13px]", isUser && "[&_*]:text-ta-accent-fg")}
+					dangerouslySetInnerHTML={{ __html: formatText(content) }}
+				/>
+			</div>
+		</div>
+	);
 }

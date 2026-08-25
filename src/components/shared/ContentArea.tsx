@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useToolStore } from "@/stores/toolStore";
 import ToolHeader from "./ToolHeader";
+import AssistantFab from "./AssistantFab";
+import OverviewHub from "@/features/overview/components/OverviewHub";
 import CvParserContainer from "@/features/cv-parser/containers/CvParserContainer";
 import JdWriterContainer from "@/features/jd-writer/containers/JdWriterContainer";
 import EmailWriterContainer from "@/features/email-writer/containers/EmailWriterContainer";
@@ -11,37 +14,39 @@ import SalaryContainer from "@/features/salary-benchmark/containers/SalaryContai
 import SettingsContainer from "@/features/settings/containers/SettingsContainer";
 
 const TOOL_MAP: Record<string, React.ReactNode> = {
-  "cv-parser": <CvParserContainer />,
-  "jd-writer": <JdWriterContainer />,
-  "email-writer": <EmailWriterContainer />,
-  "cv-eval": <CvEvalContainer />,
-  "candidate-summary": <SummaryContainer />,
-  "salary-benchmark": <SalaryContainer />,
-  settings: <SettingsContainer />,
+	chat: <OverviewHub />,
+	"cv-parser": <CvParserContainer />,
+	"jd-writer": <JdWriterContainer />,
+	"email-writer": <EmailWriterContainer />,
+	"cv-eval": <CvEvalContainer />,
+	"candidate-summary": <SummaryContainer />,
+	"salary-benchmark": <SalaryContainer />,
+	settings: <SettingsContainer />,
 };
 
 export default function ContentArea() {
-  const activeTool = useToolStore((s) => s.activeTool);
+	const activeTool = useToolStore((s) => s.activeTool);
+	const scrollRef = useRef<HTMLDivElement>(null);
 
-  return (
-    <div className="flex-1 flex flex-col overflow-hidden bg-canvas min-w-0">
-      <ToolHeader />
-      <div className="flex-1 overflow-y-auto p-7 md:p-8">
-        {activeTool === "chat" ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <span className="text-5xl mb-4">✦</span>
-            <h3 className="text-[20px] text-ink font-semibold mb-2">
-              Trợ lý AI
-            </h3>
-            <p className="text-[13px] text-ink-2 max-w-[320px]">
-              Chat panel ở bên phải luôn hiển thị. Chọn công cụ khác từ sidebar
-              để sử dụng.
-            </p>
-          </div>
-        ) : (
-          TOOL_MAP[activeTool] ?? null
-        )}
-      </div>
-    </div>
-  );
+	// Switching tools must land at the top of the new screen, and reset
+	// focus to the main region so screen readers announce the change.
+	useEffect(() => {
+		scrollRef.current?.scrollTo({ top: 0 });
+	}, [activeTool]);
+
+	return (
+		<div className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-canvas">
+			<ToolHeader />
+			<main
+				ref={scrollRef}
+				id="main-content"
+				tabIndex={-1}
+				className="flex-1 overflow-y-auto p-4 pb-24 md:p-7 md:pb-28"
+			>
+				{TOOL_MAP[activeTool] ?? null}
+			</main>
+
+			<AssistantFab />
+		</div>
+	);
 }

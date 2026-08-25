@@ -1,4 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Check, Plus, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { CvField } from "../types";
 
 interface FieldChipsProps {
@@ -19,109 +23,155 @@ export default function FieldChips({
 	const [adding, setAdding] = useState(false);
 	const [newKey, setNewKey] = useState("");
 	const [newLabel, setNewLabel] = useState("");
+	const [error, setError] = useState("");
 	const keyRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		if (adding) keyRef.current?.focus();
 	}, [adding]);
 
-	const handleAdd = () => {
-		const key = newKey.trim().replace(/\s+/g, "_").toLowerCase();
-		const label = newLabel.trim();
-		if (!key || !label) return;
-		if (fields.some((f) => f.key === key)) return;
-		onAddField({ key, label });
+	const reset = () => {
 		setNewKey("");
 		setNewLabel("");
+		setError("");
 		setAdding(false);
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent) => {
-		if (e.key === "Enter") handleAdd();
-		if (e.key === "Escape") {
-			setAdding(false);
-			setNewKey("");
-			setNewLabel("");
+	const handleAdd = () => {
+		const key = newKey.trim().replace(/\s+/g, "_").toLowerCase();
+		const label = newLabel.trim();
+		if (!key || !label) {
+			setError("Cần cả khoá và nhãn hiển thị.");
+			return;
 		}
+		if (fields.some((f) => f.key === key)) {
+			setError(`Khoá "${key}" đã tồn tại.`);
+			return;
+		}
+		onAddField({ key, label });
+		reset();
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			handleAdd();
+		}
+		if (e.key === "Escape") reset();
 	};
 
 	return (
-		<div className="flex flex-wrap gap-2 items-center">
-			{fields.map((field) => (
-				<div key={field.key} className="group relative inline-flex">
-					<button
-						onClick={() => onToggle(field.key)}
-						type="button"
-						className={`px-3 py-[5px] rounded-full text-[11px] font-mono border transition-all pr-6
-              ${
-								selected.has(field.key)
-									? "bg-ta-accent-3/10 border-ta-accent-3 text-ta-accent-3"
-									: "border-border-strong text-ink-2 bg-surface hover:border-ta-accent-3 hover:text-ta-accent-3"
-							}`}
-					>
-						{field.label}
-					</button>
-					<button
-						type="button"
-						onClick={(e) => {
-							e.stopPropagation();
-							onRemoveField(field.key);
-						}}
-						title="Xóa trường này"
-						className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-ink-3 hover:text-red-400 leading-none"
-					>
-						✕
-					</button>
-				</div>
-			))}
+		<div className="flex flex-col gap-2">
+			<div className="flex flex-wrap gap-2">
+				{fields.map((field) => {
+					const isOn = selected.has(field.key);
+					return (
+						<span key={field.key} className="group/chip relative inline-flex">
+							{/* Selection is a toggle, so it carries aria-pressed and a
+							    check glyph — the state doesn't rest on colour alone. */}
+							<button
+								type="button"
+								onClick={() => onToggle(field.key)}
+								aria-pressed={isOn}
+								className={cn(
+									"inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border py-1.5 pl-3 pr-8",
+									"text-[12px] font-medium transition-colors duration-150",
+									isOn
+										? "border-ta-accent bg-ta-accent-soft text-ta-accent"
+										: "border-border-strong bg-surface text-ink-2 hover:border-ta-accent hover:text-ta-accent",
+								)}
+							>
+								<Check
+									className={cn(
+										"size-3 shrink-0 transition-opacity",
+										isOn ? "opacity-100" : "opacity-0",
+									)}
+									aria-hidden="true"
+								/>
+								{field.label}
+							</button>
+							<button
+								type="button"
+								onClick={() => onRemoveField(field.key)}
+								aria-label={`Xoá trường ${field.label}`}
+								title={`Xoá trường ${field.label}`}
+								/* Always visible: this used to appear only on hover, which
+								   left no way to remove a field on a touch device. */
+								className="absolute right-1 top-1/2 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-ink-4 transition-colors hover:bg-danger-soft hover:text-danger"
+							>
+								<X className="size-3" aria-hidden="true" />
+							</button>
+						</span>
+					);
+				})}
 
-			{adding ? (
-				<div className="flex items-center gap-1.5 border border-ta-accent-3/60 rounded-full px-2 py-[3px] bg-ta-accent-3/5">
-					<input
-						ref={keyRef}
-						value={newKey}
-						onChange={(e) => setNewKey(e.target.value)}
-						onKeyDown={handleKeyDown}
-						placeholder="key"
-						className="text-[11px] font-mono bg-transparent outline-none w-[72px] text-ink-1 placeholder:text-ink-3"
-					/>
-					<span className="text-ink-3 text-[10px]">/</span>
-					<input
-						value={newLabel}
-						onChange={(e) => setNewLabel(e.target.value)}
-						onKeyDown={handleKeyDown}
-						placeholder="label"
-						className="text-[11px] font-mono bg-transparent outline-none w-[80px] text-ink-1 placeholder:text-ink-3"
-					/>
+				{adding ? (
+					<span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-ta-accent bg-ta-accent-soft py-1 pl-3 pr-1.5">
+						<label className="sr-only" htmlFor="new-field-key">
+							Khoá trường
+						</label>
+						<input
+							id="new-field-key"
+							ref={keyRef}
+							value={newKey}
+							onChange={(e) => setNewKey(e.target.value)}
+							onKeyDown={handleKeyDown}
+							placeholder="khoa_json"
+							className="w-[86px] bg-transparent font-mono text-[11.5px] text-ink outline-none placeholder:text-ink-4"
+						/>
+						<span aria-hidden="true" className="text-ink-4">
+							/
+						</span>
+						<label className="sr-only" htmlFor="new-field-label">
+							Nhãn hiển thị
+						</label>
+						<input
+							id="new-field-label"
+							value={newLabel}
+							onChange={(e) => setNewLabel(e.target.value)}
+							onKeyDown={handleKeyDown}
+							placeholder="Nhãn"
+							className="w-[86px] bg-transparent text-[11.5px] text-ink outline-none placeholder:text-ink-4"
+						/>
+						<button
+							type="button"
+							onClick={handleAdd}
+							aria-label="Thêm trường"
+							className="flex size-6 cursor-pointer items-center justify-center rounded-full text-ta-accent transition-colors hover:bg-surface"
+						>
+							<Check className="size-3.5" aria-hidden="true" />
+						</button>
+						<button
+							type="button"
+							onClick={reset}
+							aria-label="Huỷ"
+							className="flex size-6 cursor-pointer items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-surface hover:text-danger"
+						>
+							<X className="size-3.5" aria-hidden="true" />
+						</button>
+					</span>
+				) : (
 					<button
 						type="button"
-						onClick={handleAdd}
-						className="text-[10px] text-ta-accent-3 hover:text-ta-accent-3/70 font-mono ml-0.5"
+						onClick={() => setAdding(true)}
+						className="inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-full border border-dashed border-border-strong bg-surface px-3 py-1.5 text-[12px] font-medium text-ink-3 transition-colors duration-150 hover:border-ta-accent hover:text-ta-accent"
 					>
-						✓
+						<Plus className="size-3" aria-hidden="true" />
+						Thêm trường
 					</button>
-					<button
-						type="button"
-						onClick={() => {
-							setAdding(false);
-							setNewKey("");
-							setNewLabel("");
-						}}
-						className="text-[10px] text-ink-3 hover:text-red-400 font-mono"
-					>
-						✕
-					</button>
-				</div>
-			) : (
-				<button
-					type="button"
-					onClick={() => setAdding(true)}
-					title="Thêm trường mới"
-					className="px-3 py-[5px] rounded-full text-[11px] font-mono border border-dashed border-border-strong text-ink-3 bg-surface hover:border-ta-accent-3 hover:text-ta-accent-3 transition-all"
-				>
-					+ Thêm
-				</button>
-			)}
+				)}
+			</div>
+
+			{error ? (
+				<p role="alert" className="text-[11.5px] font-medium text-danger">
+					{error}
+				</p>
+			) : null}
+
+			<p className="text-[11.5px] text-ink-3">
+				{selected.size}/{fields.length} trường được chọn — chỉ những trường bật
+				mới xuất hiện trong kết quả và tệp xuất.
+			</p>
 		</div>
 	);
 }
