@@ -1,4 +1,5 @@
-import { Sparkles, UserRound } from "lucide-react";
+import Image from "next/image";
+import { Sparkles } from "lucide-react";
 import { formatText } from "@/lib/formatText";
 import { cn } from "@/lib/utils";
 
@@ -12,21 +13,23 @@ export default function MessageBubble({ role, content }: MessageBubbleProps) {
 
 	return (
 		<div className={cn("animate-fade-up flex gap-2.5", isUser && "flex-row-reverse")}>
-			<span
-				aria-hidden="true"
-				className={cn(
-					"mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full",
-					isUser
-						? "bg-canvas-2 text-ink-2"
-						: "bg-ta-accent text-ta-accent-fg",
-				)}
-			>
-				{isUser ? (
-					<UserRound className="size-3.5" />
-				) : (
+			{isUser ? (
+				<Image
+					src="/user.png"
+					alt=""
+					width={56}
+					height={56}
+					aria-hidden="true"
+					className="mt-0.5 size-7 shrink-0 rounded-full bg-canvas-2 object-cover"
+				/>
+			) : (
+				<span
+					aria-hidden="true"
+					className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-ta-accent text-ta-accent-fg"
+				>
 					<Sparkles className="size-3.5" />
-				)}
-			</span>
+				</span>
+			)}
 
 			<div
 				className={cn(

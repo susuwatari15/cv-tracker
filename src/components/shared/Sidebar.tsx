@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { ChevronRight, UserRound, X } from "lucide-react";
+import Image from "next/image";
+import { ChevronRight, X } from "lucide-react";
 import { useToolStore } from "@/stores/toolStore";
 import { useProviderStore } from "@/stores/providerStore";
 import { useShellStore } from "@/stores/shellStore";
@@ -33,8 +34,16 @@ function NavContent() {
 		<>
 			{/* Brand */}
 			<div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-				<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-ta-accent text-sm font-bold text-ta-accent-fg">
-					TA
+				{/* The mark is dark blue — it needs a light tile to read on the rail */}
+				<span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white p-1">
+					<Image
+						src="/logo.png"
+						alt=""
+						width={64}
+						height={64}
+						priority
+						className="size-full object-contain"
+					/>
 				</span>
 				<span className="min-w-0">
 					<span className="block truncate text-[15px] font-bold leading-tight tracking-tight text-white">
@@ -102,9 +111,13 @@ function NavContent() {
 
 			{/* Account + appearance */}
 			<div className="flex items-center gap-3 border-t border-white/10 px-5 py-4">
-				<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/70">
-					<UserRound className="size-4" aria-hidden="true" />
-				</span>
+				<Image
+					src="/user.png"
+					alt=""
+					width={64}
+					height={64}
+					className="size-8 shrink-0 rounded-full bg-white/10 object-cover"
+				/>
 				<span className="min-w-0 flex-1">
 					<span className="block truncate text-[12.5px] font-medium leading-tight text-white">
 						Hue Nguyen

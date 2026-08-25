@@ -28,6 +28,16 @@ export const metadata: Metadata = {
 	title: "TA Assistant — Talent Acquisition Toolkit",
 	description:
 		"Bộ công cụ AI cho tuyển dụng: sàng lọc CV, soạn JD, đánh giá ứng viên, benchmark lương.",
+	applicationName: "TA Assistant",
+	manifest: "/site.webmanifest",
+	icons: {
+		icon: [
+			{ url: "/favicon.ico", sizes: "any" },
+			{ url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+			{ url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+		],
+		apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+	},
 };
 
 export const viewport: Viewport = {
