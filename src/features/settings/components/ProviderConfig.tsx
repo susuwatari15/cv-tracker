@@ -17,7 +17,12 @@ import GhostButton from "@/components/shared/GhostButton";
 import StatusPill from "@/components/shared/StatusPill";
 import { useProviderStore } from "@/stores/providerStore";
 import { fetchModels } from "@/services/claude";
-import { PROVIDERS, PROVIDER_IDS, type ProviderId } from "@/lib/ai/providers";
+import {
+	PROVIDERS,
+	PROVIDER_IDS,
+	formatKeyPrefixes,
+	type ProviderId,
+} from "@/lib/ai/providers";
 import { normalizeBaseUrl, validateBaseUrl } from "@/lib/ai/endpoint";
 
 export default function ProviderConfig() {
@@ -174,10 +179,10 @@ export default function ProviderConfig() {
 
 			<FieldGroup
 				label="API key"
-				hint={`Key được lưu riêng cho từng nhà cung cấp — đổi provider không mất key cũ. Thường bắt đầu bằng "${def.keyPrefix}".`}
+				hint={`Key được lưu riêng cho từng nhà cung cấp — đổi provider không mất key cũ. Thường bắt đầu bằng ${formatKeyPrefixes(def)}.`}
 				error={
 					status === "invalid"
-						? `Key không khớp tiền tố "${def.keyPrefix}" của ${def.label}. Kiểm tra lại trước khi gọi API.`
+						? `Key không khớp tiền tố ${formatKeyPrefixes(def)} của ${def.label}. Kiểm tra lại trước khi gọi API.`
 						: undefined
 				}
 			>

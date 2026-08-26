@@ -1,0 +1,16 @@
+{
+	"name": "TA Assistant — Talent Acquisition Toolkit",
+	"short_name": "TA Assistant",
+	"description": "Bộ công cụ AI cho tuyển dụng: sàng lọc CV, soạn JD, đánh giá ứng viên, benchmark lương.",
+	"lang": "vi",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"theme_color": "#0b5cad",
+	"background_color": "#f5f7fa",
+	"icons": [
+		{ "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+		{ "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" },
+		{ "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+	]
+}

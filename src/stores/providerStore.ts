@@ -4,6 +4,7 @@ import {
 	PROVIDERS,
 	getProvider,
 	isProviderId,
+	matchesKeyPrefix,
 	type ProviderId,
 } from "@/lib/ai/providers";
 import { normalizeBaseUrl, validateBaseUrl } from "@/lib/ai/endpoint";
@@ -74,7 +75,7 @@ interface ProviderStore {
 
 const validate = (id: ProviderId, k: string): ApiKeyStatus => {
 	if (!k) return "empty";
-	return k.startsWith(PROVIDERS[id].keyPrefix) ? "valid" : "invalid";
+	return matchesKeyPrefix(PROVIDERS[id], k) ? "valid" : "invalid";
 };
 
 function persist(state: {
